@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_spectacular',
 
-    'accounts'
+    'accounts',
+    'core',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -162,7 +164,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
     BASE_DIR / 'client/dist'
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
