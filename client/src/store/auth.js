@@ -24,7 +24,7 @@ export const useAuth = defineStore("auth", {
   actions: {
     async loginAction(loginData) {
       try {
-        const response = await httpClient.post("auth/login", loginData);
+        const response = await httpClient.post("login", loginData);
         if (response.data) {
           this.authData = response.data;
           toast.success("Login successful!");
@@ -39,7 +39,7 @@ export const useAuth = defineStore("auth", {
 
     async registerAction(registerData) {
       try {
-        const response = await httpClient.post("auth/register", registerData);
+        const response = await httpClient.post("register", registerData);
         if (response.data) {
           this.authData = response.data;
           toast.success("Registration successful!");
@@ -57,7 +57,7 @@ export const useAuth = defineStore("auth", {
         const headers = {
           Authorization: `Bearer ${this.authData.token}`,
         };
-        const response = await httpClient.get("auth/profile", { headers });
+        const response = await httpClient.get("profile", { headers });
       } catch (error) {
         console.log(error);
         return error;

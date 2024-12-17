@@ -2,11 +2,19 @@ from rest_framework import generics, status, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers import AnswerSerializer, QuestionSerializer, CustomUserSerializer, CustomTokenObtainPairSerializer
+from api.serializers import (
+    AnswerSerializer,
+    QuestionSerializer,
+    CustomUserSerializer,
+    CustomTokenObtainPairSerializer,
+    CustomUserSerializer,
+    ListUserSerializer,
+)
 from core.models import Answer, Question
 from accounts.models import CustomUser
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -16,6 +24,7 @@ class CreateCustomUserApiView(generics.CreateAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = []
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
@@ -30,7 +39,7 @@ class ListCustomUsersApiView(generics.ListAPIView):
 
 
 class QuestionViewSet(viewsets.ModelViewSet):
-    """Provide CRUD +L functionality for Question."""
+    """Provide CRUD functionality for Question."""
 
     queryset = Question.objects.all().order_by("-created_at")
     serializer_class = QuestionSerializer

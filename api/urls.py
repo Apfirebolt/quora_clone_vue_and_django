@@ -9,6 +9,8 @@ router.register(r"questions", qv.QuestionViewSet)
 urlpatterns = [
     path("", include(router.urls)),
     path("register", qv.CreateCustomUserApiView.as_view(), name="signup"),
+    path("login", qv.CustomTokenObtainPairView.as_view(), name="signin"),
+    path("refresh", qv.TokenRefreshView.as_view(), name="refresh"),
     path(
         "questions-answers/<slug:slug>/",
         qv.AnswerListAPIView.as_view(),
