@@ -2,6 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import NotFound from '../views/NotFound.vue'
 
+const authGuard = (to, from, next) => {
+    if (localStorage.getItem('user')) {
+        next()
+    } else {
+        next('/login')
+    }
+}
+
 const routes = [
     {
         path: '/',
@@ -21,7 +29,14 @@ const routes = [
     {
         path: '/profile',
         name: 'Profile',
+        beforeEnter: authGuard,
         component: () => import('../views/Profile.vue')
+    },
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        beforeEnter: authGuard,
+        component: () => import('../views/Dashboard.vue')
     },
     {
         path: '/server-error',

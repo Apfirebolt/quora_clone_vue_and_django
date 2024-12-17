@@ -7,6 +7,7 @@ import App from "./App.vue";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import HeaderComponent from "./components/HeaderComponent.vue";
+import FooterComponent from "./components/FooterComponent.vue";
 // Swiper imports
 import SwiperClass, { Pagination } from "swiper";
 import VueAwesomeSwiper from "vue-awesome-swiper";
@@ -24,6 +25,7 @@ app.use(createPinia());
 app.use(VueSmoothScroll);
 app.use(VueAwesomeSwiper);
 app.component("header-component", HeaderComponent);
+app.component("footer-component", FooterComponent);
 app.mount("#app");
 
 const options = {

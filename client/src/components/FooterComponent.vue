@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-primary py-4">
+  <footer class="bg-primary py-4 font-inter">
     <div class="container mx-auto px-4">
       <p class="text-center text-white text-sm">
         &copy; {{ currentYear }} Quora Clone - All rights reserved.

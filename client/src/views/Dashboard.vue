@@ -2,7 +2,7 @@
     <header-component />
     <section class="bg-white shadow sm:rounded-lg" id="about">
         <div class="px-4 py-5 sm:p-6">
-            <h2 class="text-3xl my-5 text-center text-red-800">HOME</h2>
+            <h2 class="text-3xl my-5 text-center text-red-800">DASHBOARD</h2>
             <h3 class="text-lg leading-6 font-medium text-gray-900">
                 Update your email
             </h3>
@@ -21,4 +21,5 @@
 </template>
 
 <script setup>
+
 </script>
