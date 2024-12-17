@@ -4,17 +4,11 @@
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <h2 class="text-2xl text-white font-bold">Futura</h2>
+            <h2 class="text-2xl text-white font-bold">Quora Clone</h2>
           </div>
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-              <router-link
-                to="/expense"
-                href="#"
-                class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                >Expense</router-link
-              >
               <router-link
                 to="/"
                 href="#"
@@ -65,11 +59,6 @@
     <DisclosurePanel class="sm:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-        <router-link
-          to="/expense"
-          class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-          >Expense</router-link
-        >
         <router-link
           to="/"
           class="text-white block px-3 py-2 rounded-md text-base font-medium"

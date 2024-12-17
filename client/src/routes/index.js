@@ -24,11 +24,6 @@ const routes = [
         component: () => import('../views/Profile.vue')
     },
     {
-        path: '/expense',
-        name: 'Expense',
-        component: () => import('../views/Expense.vue')
-    },
-    {
         path: '/server-error',
         name: 'ServerError',
         component: () => import('../views/ServerError.vue')

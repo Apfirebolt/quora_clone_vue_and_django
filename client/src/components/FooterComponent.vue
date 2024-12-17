@@ -1,8 +1,8 @@
 <template>
-  <footer class="bg-gray-800 py-4">
+  <footer class="bg-primary py-4">
     <div class="container mx-auto px-4">
-      <p class="text-center text-gray-400 text-sm">
-        &copy; {{ currentYear }} Expense Management Application
+      <p class="text-center text-white text-sm">
+        &copy; {{ currentYear }} Quora Clone - All rights reserved.
       </p>
     </div>
   </footer>
@@ -21,7 +21,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style>
-/* Add any custom styles here */
-</style>
