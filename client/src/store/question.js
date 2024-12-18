@@ -93,6 +93,24 @@ export const useQuestion = defineStore("question", {
       }
     },
 
+    async getMyQuestionsAction() {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.get("my-questions", {
+          headers,
+        });
+        this.loading = false;
+        this.questions = response.data;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
     async deleteQuestion(slug) {
       try {
         const headers = {

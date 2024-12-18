@@ -32,7 +32,7 @@
                   'px-3 py-2 rounded-md text-sm font-medium',
                 ]"
                 :aria-current="item.current ? 'page' : undefined"
-                >{{ item.name }}</router-link
+                >{{ item.path }}</router-link
               >
               <router-link
                 v-if="!authData"
@@ -158,6 +158,7 @@ const authMenu = [
   { name: "Dashboard", path: "Dashboard", current: false },
   { name: "Profile", path: "Profile", current: false },
   { name: "Users", path: "Users", current: false },
+  { name: "MyQuestions", path: "My Questions", current: false },
 ];
 
 const adminMenu = [
