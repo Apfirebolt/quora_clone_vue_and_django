@@ -5,11 +5,11 @@
         </h2>
 
         <div>
-            <label for="description" class="block text-sm font-medium text-gray-700">
+            <label for="body" class="block text-sm font-medium text-gray-700">
                 Type Your Answer
             </label>
             <div class="mt-1">
-                <textarea id="description" name="description" v-model="description" rows="4"
+                <textarea id="body" name="body" v-model="body" rows="4"
                     placeholder="Enter Question Description"
                     class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-secondary focus:border-primary text-secondary sm:text-sm">
                 </textarea>
@@ -42,23 +42,22 @@ const props = defineProps({
     }
 });
 
-const content = ref('');
-const description = ref('');
+const body = ref('');
 const errors = ref([]);
 const { closeModal, addAnswer } = props;
 
 function handleSubmit(e) {
     e.preventDefault();
     errors.value = [];
-    if (!content.value) {
+    if (!body.value) {
         errors.value.push('Question is required');
     }
     if (errors.value.length > 0) {
         return;
     } else {
         console.log('Form submitted');
-        addQuestion({
-            content: content.value,
+        addAnswer({
+            body: body.value,
         });
         closeModal();
     }

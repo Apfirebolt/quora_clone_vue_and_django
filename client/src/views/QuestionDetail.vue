@@ -20,7 +20,19 @@
                     </button>
                 </div>
             </div>
+            <div>
+            <h3 class="text-xl leading-6 font-medium text-primary my-3">
+                Answers
+            </h3>
+            <div class="mt-2 text-md text-gray-500">
+                <div v-for="answer in question.answers" :key="answer.id" class="bg-gray-100 p-4 my-2 rounded-lg">
+                    <p>{{ answer.body }}</p>
+                    <p>Answered by: {{ answer.author }}</p>
+                </div>
+            </div>
         </div>
+        </div>
+        
         <TransitionRoot appear :show="isOpen" as="template">
             <Dialog as="div" @close="closeModal" class="relative z-10">
                 <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0"
@@ -75,10 +87,9 @@ function openModal() {
     isOpen.value = true;
 }
 
-const addAnswer = async (answer) => {
-    await answerStore.addAnswer();
-    console.log('Answer added');
+const addAnswer = async (answerBody) => {
     const questionSlug = route.params.slug;
+    await answerStore.addAnswer(questionSlug, answerBody);
     await questionStore.getQuestionAction(questionSlug);
 }
 

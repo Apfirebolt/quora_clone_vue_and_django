@@ -39,10 +39,10 @@ class Answer(TimeStampedModel):
     )
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     upvotes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="upvoted_answers"
+        settings.AUTH_USER_MODEL, related_name="upvoted_answers", blank=True
     )
     downvotes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="downvoted_answers"
+        settings.AUTH_USER_MODEL, related_name="downvoted_answers", blank=True
     )
 
     def __str__(self):

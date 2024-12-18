@@ -27,16 +27,21 @@ export const useAnswer = defineStore("answer", {
   },
 
   actions: {
-    async addAnswer(answerData) {
+    async addAnswer(questionSlug, answerData) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.post("answers", answerData, {
+        this.loading = true;
+        const response = await httpClient.post(`questions-new-answer/${questionSlug}/`, answerData, {
           headers,
         });
-        toast.success("Answer added!");
+        if (response.status === 201) {
+          toast.success("Answer added!");
+          this.loading = false;
+        }
       } catch (error) {
+        this.loading = false;
         console.log(error);
         return error;
       }
