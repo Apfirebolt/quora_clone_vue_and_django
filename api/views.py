@@ -1,10 +1,19 @@
-from rest_framework import generics, status, viewsets
+from rest_framework.generics import (
+    ListAPIView,
+    RetrieveAPIView,
+    CreateAPIView,
+    get_object_or_404,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils.text import slugify
 
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
@@ -20,7 +29,7 @@ from accounts.models import CustomUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
-class CreateCustomUserApiView(generics.CreateAPIView):
+class CreateCustomUserApiView(CreateAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = []
@@ -32,25 +41,31 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     permission_classes = []
 
 
-class ListCustomUsersApiView(generics.ListAPIView):
+class ListCustomUsersApiView(ListAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
 
 
-class QuestionViewSet(viewsets.ModelViewSet):
-    """Provide CRUD functionality for Question."""
-
-    queryset = Question.objects.all().order_by("-created_at")
+class ListCreateQuestionsApiView(ListCreateAPIView):
     serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user, slug=slugify(serializer.validated_data["content"])
+        )
+
+
+class RetrieveUpdateDestroyQuestionApiView(RetrieveAPIView):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     lookup_field = "slug"
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
 
-
-class AnswerCreateAPIView(generics.CreateAPIView):
+class AnswerCreateAPIView(CreateAPIView):
     """Allow users to answer a question instance if they haven't already."""
 
     queryset = Answer.objects.all()
@@ -68,7 +83,7 @@ class AnswerCreateAPIView(generics.CreateAPIView):
         serializer.save(author=request_user, question=question)
 
 
-class AnswerRUDAPIView(generics.RetrieveUpdateDestroyAPIView):
+class AnswerRUDAPIView(RetrieveUpdateDestroyAPIView):
     """Provide *RUD functionality for an answer instance to it's author."""
 
     queryset = Answer.objects.all()
@@ -77,7 +92,7 @@ class AnswerRUDAPIView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "uuid"
 
 
-class AnswerListAPIView(generics.ListAPIView):
+class AnswerListAPIView(ListAPIView):
     """Provide the answers queryset of a specific question instance."""
 
     serializer_class = AnswerSerializer
