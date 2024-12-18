@@ -44,16 +44,36 @@ const props = defineProps({
     closeModal: {
         type: Function,
         required: true
+    },
+    addQuestion: {
+        type: Function,
+        required: true
     }
 });
 
 const content = ref('');
 const description = ref('');
 const errors = ref([]);
+const { closeModal, addQuestion } = props;
 
 function handleSubmit(e) {
     e.preventDefault();
-    console.log(content.value, description.value);
-    closeModal();
+    errors.value = [];
+    if (!content.value) {
+        errors.value.push('Question is required');
+    }
+    if (!description.value) {
+        errors.value.push('Description is required');
+    }
+    if (errors.value.length > 0) {
+        return;
+    } else {
+        console.log('Form submitted');
+        addQuestion({
+            content: content.value,
+            description: description.value
+        });
+        closeModal();
+    }
 }
 </script>
