@@ -47,23 +47,34 @@ export const useQuestion = defineStore("question", {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
+        this.loading = true;
         const response = await httpClient.put(`questions${questionData.id}`, questionData, {
           headers,
         });
-        toast.success("Question updated!");
+        if (response.status === 200) {
+          this.loading = false;
+          toast.success("Question updated!");
+        }
       } catch (error) {
         console.log(error);
+        this.loading = false;
         return error;
       }
     },
 
     async getQuestionAction(slug) {
       try {
-        const response = await httpClient.get("questions/" + slug);
-        console.log(response);
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        const response = await httpClient.get("questions/" + slug, {
+          headers,
+        });
+        if (response.status === 200) {
+          this.question = response.data;
+        }
       } catch (error) {
         console.log(error);
-        
       }
     },
 

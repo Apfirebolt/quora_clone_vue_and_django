@@ -4,32 +4,21 @@
         <div class="px-4 py-5 sm:p-6">
             <h2 class="text-3xl my-5 text-center text-red-800">QUESTION DETAIL</h2>
             <div class="flex justify-between">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Latest Questions on your feed
-                </h3>
-                <div class="mt-2 max-w-xl text-sm text-gray-500">
-                    <p>Change the email address you want associated with your account.</p>
-                    <button @click="openModal" class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Add Question
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        {{ question.content }}
+                    </h3>
+                    <p class="my-3">
+                        Asked by: {{ question.author }}
+                    </p>
+                </div>
+                <div class="mt-2 max-w-xl text-md text-gray-500">
+
+                    <button @click="openModal"
+                        class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Add Answer
                     </button>
                 </div>
-            </div>
-            
-            <div class="mt-5">
-                <ul class="divide-y divide-gray-200">
-                    <li v-for="question in questions" :key="question.id" class="py-4">
-                        <div class="flex space-x-3">
-                            <div class="flex-1 space-y-1">
-                                <p class="text-sm font-medium text-gray-900">
-                                    {{ question.content }}
-                                </p>
-                                <p class="text-sm text-gray-500">
-                                    {{ question.description }}
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
             </div>
         </div>
         <TransitionRoot appear :show="isOpen" as="template">
@@ -46,7 +35,7 @@
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
                                 class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <question-form :closeModal="closeModal" :addQuestion="addQuestion" />
+                                <answer-form :closeModal="closeModal" :add-answer="addAnswer" />
                             </DialogPanel>
                         </TransitionChild>
                     </div>
@@ -59,8 +48,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import QuestionForm from '../components/QuestionForm.vue';
+import { useRoute } from 'vue-router';
+import AnswerForm from '../components/AnswerForm.vue';
 import { useQuestion } from "../store/question";
+import { useAnswer } from "../store/answer";
 import {
     TransitionRoot,
     TransitionChild,
@@ -70,8 +61,10 @@ import {
 
 const isOpen = ref(false);
 const questionStore = useQuestion();
+const answerStore = useAnswer();
+const route = useRoute();
 
-const questions = computed(() => questionStore.getQuestions);
+const question = computed(() => questionStore.getQuestion);
 
 function closeModal() {
     isOpen.value = false;
@@ -82,13 +75,12 @@ function openModal() {
     isOpen.value = true;
 }
 
-const addQuestion = async (content, description) => {
-    await questionStore.addQuestion(content, description);
-    await questionStore.getQuestionsAction();
+const addAnswer = (answer) => {
+    console.log('Answer added');
 }
 
-onMounted(() => {
-    console.log('Dashboard mounted');
-    questionStore.getQuestionsAction();
+onMounted(async () => {
+    const questionSlug = route.params.slug;
+    await questionStore.getQuestionAction(questionSlug);
 });
 </script>

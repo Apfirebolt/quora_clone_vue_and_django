@@ -39,6 +39,12 @@ const routes = [
         component: () => import('../views/Dashboard.vue')
     },
     {
+        path: '/questions/:slug',
+        name: 'QuestionDetail',
+        beforeEnter: authGuard,
+        component: () => import('../views/QuestionDetail.vue')
+    },
+    {
         path: '/server-error',
         name: 'ServerError',
         component: () => import('../views/ServerError.vue')

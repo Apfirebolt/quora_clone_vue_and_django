@@ -3,18 +3,16 @@
     <section class="bg-white shadow sm:rounded-lg" id="about">
         <div class="px-4 py-5 sm:p-6">
             <h2 class="text-3xl my-5 text-center text-red-800">DASHBOARD</h2>
-            <div class="flex justify-between">
+            <div>
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Latest Questions on your feed
+                    Latest Questions on your feed
                 </h3>
-                <div class="mt-2 max-w-xl text-sm text-gray-500">
-                    <p>Change the email address you want associated with your account.</p>
-                    <button @click="openModal" class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Add Question
-                    </button>
-                </div>
+                <button @click="openModal"
+                    class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Add Question
+                </button>
             </div>
-            
+
             <div class="mt-5">
                 <ul class="divide-y divide-gray-200">
                     <li v-for="question in questions" :key="question.id" class="py-4">
@@ -28,9 +26,12 @@
                                 </p>
                             </div>
                             <div>
-                                <button @click="updateQuestion(question)" class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
-                                <button @click="viewQuestion(question.id)" class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">View</button>
-                                <button @click="deleteQuestion(question)" class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
+                                <button @click="updateQuestion(question)"
+                                    class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
+                                <button @click="viewQuestion(question)"
+                                    class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">View</button>
+                                <button @click="deleteQuestion(question)"
+                                    class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
                             </div>
                         </div>
                     </li>
@@ -51,7 +52,8 @@
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
                                 class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <question-form :closeModal="closeModal" :addQuestion="addQuestion" :question="selectedQuestion" />
+                                <question-form :closeModal="closeModal" :addQuestion="addQuestion"
+                                    :question="selectedQuestion" />
                             </DialogPanel>
                         </TransitionChild>
                     </div>
@@ -73,7 +75,8 @@
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
                                 class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <confirm-modal :message="confirmMessage" @confirmAction="deleteQuestionUtil" @cancelAction="closeConfirmModal" />
+                                <confirm-modal :message="confirmMessage" @confirmAction="deleteQuestionUtil"
+                                    @cancelAction="closeConfirmModal" />
                             </DialogPanel>
                         </TransitionChild>
                     </div>
@@ -86,6 +89,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import QuestionForm from '../components/QuestionForm.vue';
 import ConfirmModal from '../components/Confirm.vue';
 import { useQuestion } from "../store/question";
@@ -101,6 +105,7 @@ const isConfirmModalOpen = ref(false);
 const questionStore = useQuestion();
 const selectedQuestion = ref(null);
 const confirmMessage = ref('');
+const router = useRouter();
 
 const questions = computed(() => questionStore.getQuestions);
 
@@ -142,8 +147,9 @@ const updateQuestion = (question) => {
     openModal();
 }
 
-const viewQuestion = async (id) => {
-    console.log('Inside view question ...', id);
+const viewQuestion = async (question) => {
+    console.log('Inside view question ...', question);
+    router.push({ name: 'QuestionDetail', params: { slug: question.slug } });
 }
 
 onMounted(() => {
