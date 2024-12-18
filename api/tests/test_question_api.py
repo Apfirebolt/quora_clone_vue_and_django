@@ -72,4 +72,30 @@ class PrivateQuestionApiTests(TestCase):
         get_response = self.client.get(detail_url(question.slug))
         self.assertEqual(get_response.status_code, status.HTTP_200_OK)
 
+    def test_update_question(self):
+        """Test updating a question"""
+        payload = {'description': 'sample-question-1', 'content': 'Sample body 1', 'author': self.user.id}
+        res = self.client.post(QUESTION_URL, payload)
+
+        question = Question.objects.get(uuid=res.data['uuid'])
+
+        update_payload = {'description': 'sample-question-1', 'content': 'Sample body 1 updated', 'author': self.user.id}
+        update_response = self.client.put(detail_url(question.slug), update_payload)
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+
+
+    def test_delete_question(self):
+        """Test deleting a question"""
+
+        payload = {'description': 'sample-question-1', 'content': 'Sample body 1', 'author': self.user.id}
+        res = self.client.post(QUESTION_URL, payload)
+
+        question = Question.objects.get(uuid=res.data['uuid'])
+
+        delete_response = self.client.delete(detail_url(question.slug))
+        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        get_response = self.client.get(detail_url(question.slug))
+        self.assertEqual(get_response.status_code, status.HTTP_404_NOT_FOUND)
+
        

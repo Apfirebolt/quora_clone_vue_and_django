@@ -58,11 +58,25 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
         )
 
 
-class RetrieveUpdateDestroyQuestionApiView(RetrieveAPIView):
+class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     lookup_field = "slug"
+
+    def delete(self, request, slug):
+        question = get_object_or_404(Question, slug=slug)
+        question.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def update(self, request, slug):
+        question = get_object_or_404(Question, slug=slug)
+        serializer = self.get_serializer(question, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AnswerCreateAPIView(CreateAPIView):
