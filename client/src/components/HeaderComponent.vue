@@ -157,6 +157,7 @@ const authMenu = [
   { name: "Home", path: "Home", current: false },
   { name: "Dashboard", path: "Dashboard", current: false },
   { name: "Profile", path: "Profile", current: false },
+  { name: "Users", path: "Users", current: false },
 ];
 
 const adminMenu = [

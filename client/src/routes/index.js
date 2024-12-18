@@ -45,6 +45,12 @@ const routes = [
         component: () => import('../views/QuestionDetail.vue')
     },
     {
+        path: '/users',
+        name: 'Users',
+        beforeEnter: authGuard,
+        component: () => import('../views/Users.vue')
+    },
+    {
         path: '/server-error',
         name: 'ServerError',
         component: () => import('../views/ServerError.vue')

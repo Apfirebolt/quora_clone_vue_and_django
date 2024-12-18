@@ -8,6 +8,7 @@ urlpatterns = [
     path("login", apiViews.CustomTokenObtainPairView.as_view(), name="signin"),
     path("refresh", apiViews.TokenRefreshView.as_view(), name="refresh"),
     path("profile", apiViews.ProfileView.as_view(), name="profile"),
+    path("users", apiViews.ListCustomUsersApiView.as_view(), name="users"),
     # questions create and list
     path(
         "questions",
