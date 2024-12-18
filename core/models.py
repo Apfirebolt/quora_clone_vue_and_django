@@ -47,3 +47,17 @@ class Answer(TimeStampedModel):
 
     def __str__(self):
         return self.author.username
+    
+
+class Comment(TimeStampedModel):
+    uuid = models.UUIDField(default=uuid_lib.uuid4, editable=False)
+    body = models.TextField()
+    answer = models.ForeignKey(
+        Answer, on_delete=models.CASCADE, related_name="comments"
+    )
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.author.username
+    
+

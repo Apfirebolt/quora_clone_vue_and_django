@@ -7,6 +7,7 @@ urlpatterns = [
     path("register", apiViews.CreateCustomUserApiView.as_view(), name="signup"),
     path("login", apiViews.CustomTokenObtainPairView.as_view(), name="signin"),
     path("refresh", apiViews.TokenRefreshView.as_view(), name="refresh"),
+    path("profile", apiViews.ProfileView.as_view(), name="profile"),
     # questions create and list
     path(
         "questions",
@@ -19,10 +20,22 @@ urlpatterns = [
         apiViews.RetrieveUpdateDestroyQuestionApiView.as_view(),
         name="question-detail",
     ),
+    # my questions list
+    path(
+        "my-questions",
+        apiViews.MyQuestionsListAPIView.as_view(),
+        name="my-questions",
+    ),
     path(
         "questions-answers/<slug:slug>/",
         apiViews.AnswerListAPIView.as_view(),
         name="answer-list",
+    ),
+    # My answers list
+    path(
+        "my-answers",
+        apiViews.MyAnswersListAPIView.as_view(),
+        name="my-answers",
     ),
     path(
         "questions-new-answer/<slug:slug>/",

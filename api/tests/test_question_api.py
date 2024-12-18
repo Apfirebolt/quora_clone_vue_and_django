@@ -11,6 +11,8 @@ from core.models import Question
 
 
 QUESTION_URL = reverse('api:questions')
+MY_QUESTIONS_URL = reverse('api:my-questions')
+
 
 def detail_url(question_id):
     """Return question detail URL"""
@@ -97,5 +99,17 @@ class PrivateQuestionApiTests(TestCase):
 
         get_response = self.client.get(detail_url(question.slug))
         self.assertEqual(get_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    
+    def test_my_questions(self):
+        """Test retrieving questions for user"""
+        Question.objects.create(author=self.user, slug='Sample question 1', content='Sample body 1')
+        Question.objects.create(author=self.user, slug='Sample question 2', content='Sample body 2')
+
+        res = self.client.get(MY_QUESTIONS_URL)
+
+        questions = Question.objects.filter(author=self.user)
+        serializer = QuestionSerializer(questions, many=True)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
        

@@ -47,6 +47,16 @@ class ListCustomUsersApiView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = CustomUserSerializer(user)
+
+        return Response(serializer.data)
+
+
 class ListCreateQuestionsApiView(ListCreateAPIView):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
@@ -77,6 +87,16 @@ class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class MyQuestionsListAPIView(ListAPIView):
+
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Question.objects.filter(author=user).order_by("-created_at")
 
 
 class AnswerCreateAPIView(CreateAPIView):
@@ -105,6 +125,17 @@ class AnswerRUDAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     lookup_field = "uuid"
 
+
+class MyAnswersListAPIView(ListAPIView):
+    """Provide the answers queryset of the request.user."""
+
+    serializer_class = AnswerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Answer.objects.filter(author=user).order_by("-created_at")
+    
 
 class AnswerListAPIView(ListAPIView):
     """Provide the answers queryset of a specific question instance."""
