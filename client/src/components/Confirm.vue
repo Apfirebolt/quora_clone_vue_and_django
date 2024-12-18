@@ -1,8 +1,6 @@
 <template>
     <div>
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
-            <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                alt="Workflow" />
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
                 Confirmation
             </h2>
@@ -21,6 +19,7 @@
                         </button>
 
                         <button @click="closeModalUtil"
+                            type="button"
                             class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Cancel
                         </button>

@@ -2,7 +2,7 @@
     <header-component />
     <section class="bg-white shadow sm:rounded-lg" id="about">
         <div class="px-4 py-5 sm:p-6">
-            <h2 class="text-3xl my-5 text-center text-red-800">DASHBOARD</h2>
+            <h2 class="text-3xl my-5 text-center text-red-800">QUESTION DETAIL</h2>
             <div class="flex justify-between">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                 Latest Questions on your feed
@@ -27,11 +27,6 @@
                                     {{ question.description }}
                                 </p>
                             </div>
-                            <div>
-                                <button @click="updateQuestion(question)" class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
-                                <button @click="viewQuestion(question.id)" class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">View</button>
-                                <button @click="deleteQuestion(question)" class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
-                            </div>
                         </div>
                     </li>
                 </ul>
@@ -51,29 +46,7 @@
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
                                 class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <question-form :closeModal="closeModal" :addQuestion="addQuestion" :question="selectedQuestion" />
-                            </DialogPanel>
-                        </TransitionChild>
-                    </div>
-                </div>
-            </Dialog>
-        </TransitionRoot>
-
-        <TransitionRoot appear :show="isConfirmModalOpen" as="template">
-            <Dialog as="div" @close="closeConfirmModal" class="relative z-10">
-                <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0"
-                    enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
-                    <div class="fixed inset-0 bg-black/25" />
-                </TransitionChild>
-
-                <div class="fixed inset-0 overflow-y-auto">
-                    <div class="flex min-h-full items-center justify-center p-4 text-center">
-                        <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-                            enter-to="opacity-100 scale-100" leave="duration-200 ease-in"
-                            leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
-                            <DialogPanel
-                                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <confirm-modal :message="confirmMessage" @confirmAction="deleteQuestionUtil" @cancelAction="closeConfirmModal" />
+                                <question-form :closeModal="closeModal" :addQuestion="addQuestion" />
                             </DialogPanel>
                         </TransitionChild>
                     </div>
@@ -87,7 +60,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import QuestionForm from '../components/QuestionForm.vue';
-import ConfirmModal from '../components/Confirm.vue';
 import { useQuestion } from "../store/question";
 import {
     TransitionRoot,
@@ -97,53 +69,22 @@ import {
 } from '@headlessui/vue'
 
 const isOpen = ref(false);
-const isConfirmModalOpen = ref(false);
 const questionStore = useQuestion();
-const selectedQuestion = ref(null);
-const confirmMessage = ref('');
 
 const questions = computed(() => questionStore.getQuestions);
 
 function closeModal() {
     isOpen.value = false;
+    console.log('Modal opened')
 }
 
 function openModal() {
     isOpen.value = true;
 }
 
-function closeConfirmModal() {
-    isConfirmModalOpen.value = false;
-}
-
-function openConfirmModal() {
-    isConfirmModalOpen.value = true;
-}
-
 const addQuestion = async (content, description) => {
     await questionStore.addQuestion(content, description);
     await questionStore.getQuestionsAction();
-}
-
-const deleteQuestion = async (question) => {
-    selectedQuestion.value = question;
-    confirmMessage.value = `Are you sure you want to delete the question: ${question.content}`;
-    openConfirmModal();
-}
-
-const deleteQuestionUtil = async () => {
-    await questionStore.deleteQuestion(selectedQuestion.value.slug);
-    await questionStore.getQuestionsAction();
-    closeConfirmModal();
-}
-
-const updateQuestion = (question) => {
-    selectedQuestion.value = question;
-    openModal();
-}
-
-const viewQuestion = async (id) => {
-    console.log('Inside view question ...', id);
 }
 
 onMounted(() => {

@@ -7,19 +7,19 @@ import { useToast } from "vue-toastification";
 const toast = useToast();
 const auth = useAuth();
 
-export const useQuestion = defineStore("question", {
+export const useAnswer = defineStore("answer", {
   state: () => ({
-    question: ref({}),
-    questions: ref([]),
+    answer: ref({}),
+    answers: ref([]),
     loading: ref(false),
   }),
 
   getters: {
-    getQuestion() {
-      return this.question;
+    getAnswer() {
+      return this.answer;
     },
-    getQuestions() {
-      return this.questions;
+    getAnswers() {
+      return this.answers;
     },
     isLoading() {
       return this.loading;
@@ -27,39 +27,39 @@ export const useQuestion = defineStore("question", {
   },
 
   actions: {
-    async addQuestion(QuestionData) {
+    async addAnswer(answerData) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.post("questions", QuestionData, {
+        const response = await httpClient.post("answers", answerData, {
           headers,
         });
-        toast.success("Question added!");
+        toast.success("Answer added!");
       } catch (error) {
         console.log(error);
         return error;
       }
     },
 
-    async updateQuestion(questionData) {
+    async updateAnswer(answerData) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.put(`questions${questionData.id}`, questionData, {
+        const response = await httpClient.put(`answers${AnswerData.id}`, answerData, {
           headers,
         });
-        toast.success("Question updated!");
+        toast.success("Answer updated!");
       } catch (error) {
         console.log(error);
         return error;
       }
     },
 
-    async getQuestionAction(slug) {
+    async getAnswerAction(AnswerId) {
       try {
-        const response = await httpClient.get("questions/" + slug);
+        const response = await httpClient.get("answers/" + AnswerId);
         console.log(response);
       } catch (error) {
         console.log(error);
@@ -67,41 +67,39 @@ export const useQuestion = defineStore("question", {
       }
     },
 
-    async getQuestionsAction(page = 1) {
+    async getAnswersAction(page = 1) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.get("questions?page=" + page, {
+        const response = await httpClient.get("answers?page=" + page, {
           headers,
         });
-        this.questions = response.data;
+        this.answers = response.data;
       } catch (error) {
         console.log(error);
         return error
       }
     },
 
-    async deleteQuestion(slug) {
+    async deleteAnswer(AnswerId) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.delete("questions/" + slug, {
+        const response = await httpClient.delete("answers/" + AnswerId, {
           headers,
         });
-        if (response.status === 204) {
-          toast.success("Question deleted!");
-        }
+        toast.success("Answer deleted!");
       } catch (error) {
         console.log(error);
         return error;
       }
     },
 
-    resetQuestionData() {
-      this.question = {};
-      this.questions = [];
+    resetAnswerData() {
+      this.answer = {};
+      this.answers = [];
     },
   },
 });
