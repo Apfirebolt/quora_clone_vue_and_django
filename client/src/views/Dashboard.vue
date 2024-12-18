@@ -26,11 +26,11 @@
                                 </p>
                             </div>
                             <div>
-                                <button @click="updateQuestion(question)"
+                                <button v-if="isQuestionOwner(question)" @click="updateQuestion(question)"
                                     class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
                                 <button @click="viewQuestion(question)"
                                     class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">View</button>
-                                <button @click="deleteQuestion(question)"
+                                <button v-if="isQuestionOwner(question)" @click="deleteQuestion(question)"
                                     class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                             <DialogPanel
                                 class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                 <question-form :closeModal="closeModal" :addQuestion="addQuestion"
-                                    :question="selectedQuestion" />
+                                    :question="selectedQuestion" :updateQuestion="updateQuestionUtil" />
                             </DialogPanel>
                         </TransitionChild>
                     </div>
@@ -93,6 +93,7 @@ import { useRouter } from 'vue-router';
 import QuestionForm from '../components/QuestionForm.vue';
 import ConfirmModal from '../components/Confirm.vue';
 import { useQuestion } from "../store/question";
+import { useAuth } from "../store/auth";
 import {
     TransitionRoot,
     TransitionChild,
@@ -103,6 +104,7 @@ import {
 const isOpen = ref(false);
 const isConfirmModalOpen = ref(false);
 const questionStore = useQuestion();
+const authStore = useAuth();
 const selectedQuestion = ref(null);
 const confirmMessage = ref('');
 const router = useRouter();
@@ -132,7 +134,7 @@ const addQuestion = async (content, description) => {
 
 const deleteQuestion = async (question) => {
     selectedQuestion.value = question;
-    confirmMessage.value = `Are you sure you want to delete the question: ${question.content}`;
+    confirmMessage.value = `Are you sure you want to delete the question: ${question.content}?`;
     openConfirmModal();
 }
 
@@ -147,13 +149,24 @@ const updateQuestion = (question) => {
     openModal();
 }
 
+const updateQuestionUtil = async (content, description) => {
+    // copy all the properties of the question object and replace the content and description
+    const question = { ...selectedQuestion.value, content, description };
+
+    await questionStore.updateQuestion(question);
+    await questionStore.getQuestionsAction();
+    closeModal();
+}
+
 const viewQuestion = async (question) => {
-    console.log('Inside view question ...', question);
     router.push({ name: 'QuestionDetail', params: { slug: question.slug } });
 }
 
+const isQuestionOwner = computed(() => {
+    return (question) => authStore.authData && question.author === authStore.authData.email;
+});
+
 onMounted(() => {
-    console.log('Dashboard mounted');
     questionStore.getQuestionsAction();
 });
 </script>

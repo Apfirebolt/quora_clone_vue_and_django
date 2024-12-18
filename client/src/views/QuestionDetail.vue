@@ -75,8 +75,11 @@ function openModal() {
     isOpen.value = true;
 }
 
-const addAnswer = (answer) => {
+const addAnswer = async (answer) => {
+    await answerStore.addAnswer();
     console.log('Answer added');
+    const questionSlug = route.params.slug;
+    await questionStore.getQuestionAction(questionSlug);
 }
 
 onMounted(async () => {

@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 const props = defineProps({
     closeModal: {
         type: Function,
@@ -48,6 +48,15 @@ const props = defineProps({
     addQuestion: {
         type: Function,
         required: true
+    },
+    updateQuestion: {
+        type: Function,
+        required: false
+    },
+    question: {
+        type: Object,
+        default: null,
+        required: false
     }
 });
 
@@ -69,11 +78,26 @@ function handleSubmit(e) {
         return;
     } else {
         console.log('Form submitted');
-        addQuestion({
-            content: content.value,
-            description: description.value
-        });
+        if (props.question) {
+            props.updateQuestion(
+                content.value,
+                description.value
+            );
+        } else {
+            addQuestion({
+                content: content.value,
+                description: description.value
+            });
+        }
         closeModal();
     }
 }
+
+onMounted(() => {
+    if (props.question) {
+        content.value = props.question.content;
+        description.value = props.question.description;
+    }
+    console.log('Question Form mounted');
+});
 </script>

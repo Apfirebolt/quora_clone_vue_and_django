@@ -48,7 +48,7 @@ export const useQuestion = defineStore("question", {
           Authorization: `Bearer ${auth.authData.access}`,
         };
         this.loading = true;
-        const response = await httpClient.put(`questions${questionData.id}`, questionData, {
+        const response = await httpClient.put(`questions/${questionData.slug}/`, questionData, {
           headers,
         });
         if (response.status === 200) {
