@@ -52,7 +52,7 @@ export const useAnswer = defineStore("answer", {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.put(`answers${AnswerData.id}`, answerData, {
+        const response = await httpClient.put(`answers/${answerData.id}`, answerData, {
           headers,
         });
         toast.success("Answer updated!");
@@ -112,12 +112,16 @@ export const useAnswer = defineStore("answer", {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
+        this.loading = true;
         const response = await httpClient.delete("answers/" + AnswerId, {
           headers,
         });
-        toast.success("Answer deleted!");
+        if (response.status === 204) {
+          toast.success("Answer deleted!");
+        }
       } catch (error) {
         console.log(error);
+        this.loading = false;
         return error;
       }
     },

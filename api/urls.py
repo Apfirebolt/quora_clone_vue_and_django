@@ -32,6 +32,12 @@ urlpatterns = [
         apiViews.AnswerListAPIView.as_view(),
         name="answer-list",
     ),
+    # answers update and destroy
+    path(
+        "answers/<uuid:uuid>/",
+        apiViews.AnswerRUDAPIView.as_view(),
+        name="answer-detail",
+    ),
     # My answers list
     path(
         "my-answers",

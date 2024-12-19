@@ -19,7 +19,7 @@
         <div class="text-center">
             <button type="submit"
                 class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2">
-                Add Answer
+                {{ answer ? 'Update' : 'Add' }} Answer
             </button>
             <button @click="closeModal"
                 class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white mx-2 bg-accent hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2">
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 const props = defineProps({
     closeModal: {
         type: Function,
@@ -38,27 +38,51 @@ const props = defineProps({
     },
     addAnswer: {
         type: Function,
-        required: true
+        required: false
+    },
+    updateAnswer: {
+        type: Function,
+        required: false
+    },
+    answer: {
+        type: Object,
+        required: false,
+        default: () => {
+            return {
+                body: ''
+            }
+        }
     }
 });
 
 const body = ref('');
 const errors = ref([]);
-const { closeModal, addAnswer } = props;
+const { closeModal, addAnswer, updateAnswer, answer } = props;
+
+onMounted(() => {
+    if (answer) {
+        body.value = answer.body;
+    }
+});
 
 function handleSubmit(e) {
     e.preventDefault();
     errors.value = [];
     if (!body.value) {
-        errors.value.push('Question is required');
+        errors.value.push('Answer body is required');
     }
     if (errors.value.length > 0) {
         return;
     } else {
-        console.log('Form submitted');
-        addAnswer({
-            body: body.value,
-        });
+        if (props.answer) {
+            updateAnswer({
+                body: body.value
+            });
+        } else {
+            addAnswer({
+                body: body.value
+            });
+        }
         closeModal();
     }
 }

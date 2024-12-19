@@ -74,7 +74,6 @@
                 >
                   <answer-form
                     :closeModal="closeModal"
-                    :addAnswer="addAnswer"
                     :answer="selectedAnswer"
                     :updateAnswer="updateAnswerUtil"
                   />
@@ -177,7 +176,7 @@
   };
   
   const deleteAnswerUtil = async () => {
-    await answerStore.deleteAnswer(selectedAnswer.value.slug);
+    await answerStore.deleteAnswer(selectedAnswer.value.uuid);
     await answerStore.getMyAnswersAction();
     closeConfirmModal();
   };
