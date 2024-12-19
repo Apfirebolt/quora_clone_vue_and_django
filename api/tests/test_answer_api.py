@@ -1,0 +1,102 @@
+"""
+Tests for the Answer API.
+"""
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+from api.serializers import AnswerSerializer
+from rest_framework.test import APIClient
+from rest_framework import status
+from core.models import Answer, Question
+
+
+QUESTION_URL = reverse('api:questions')
+MY_ANSWERS_URL = reverse('api:my-answers')
+
+def detail_url(Answer_id):
+    """Return Answer detail URL"""
+    return reverse('api:answer-detail', args=[Answer_id])
+
+def answer_create_url(slug):
+    """Return Answer create URL"""
+    return reverse('api:answer-create', args=[slug])
+
+
+class PublicAnswerApiTests(TestCase):
+    """Test the publicly available Answer API"""
+
+    def setUp(self):
+        self.client = APIClient()
+
+
+class PrivateAnswerApiTests(TestCase):
+    """Test the authorized user Answer API"""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            'test@londonappdev.com',
+            'password123'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    
+    def test_add_answer(self):
+        """Test adding an answer to a question"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        payload = {'body': 'Sample answer 1', 'author': self.user.id, 'question': question.id}
+        
+        url = answer_create_url(question.slug)
+        res = self.client.post(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        answer = Answer.objects.get(uuid=res.data['uuid'])
+        self.assertEqual(answer.body, payload['body'])
+        self.assertEqual(answer.author.id, payload['author'])
+        self.assertEqual(answer.question.id, payload['question'])
+
+    
+    def test_retrieve_answers(self):
+        """Test retrieving a list of answers"""
+        questionOne = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        questionTwo = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 2', slug='sample-question-2')
+
+
+        Answer.objects.create(author=self.user, body='Sample answer 1', question=questionOne)
+        Answer.objects.create(author=self.user, body='Sample answer 2', question=questionTwo)
+
+        res = self.client.get(MY_ANSWERS_URL)
+
+        answers = Answer.objects.all().order_by('-id')
+        serializer = AnswerSerializer(answers, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+
+
+    def test_delete_answer(self):
+        """Test deleting an answer"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+
+        url = detail_url(answer.uuid)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Answer.objects.filter(uuid=answer.uuid).count(), 0)
+        
+
+    def test_get_single_answer(self):
+        """Test retrieving a single answer"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+
+        url = detail_url(answer.uuid)
+        res = self.client.get(url)
+
+        serializer = AnswerSerializer(answer)
+        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+    
+
+       
