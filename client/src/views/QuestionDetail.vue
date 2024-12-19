@@ -50,6 +50,13 @@
                   >
                     <p>{{ comment.body }}</p>
                     <p class="text-sm">Commented by: {{ comment.author }}</p>
+
+                    <div class="my-2">
+                        <button v-if="isCommentOwner(comment)" @click="updateComment(comment)"
+                            class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
+                        <button v-if="isCommentOwner(comment)" @click="deleteComment(comment.uuid)"
+                            class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -130,6 +137,8 @@
                 <comment-form
                   :closeModal="closeCommentModal"
                   :add-comment="addComment"
+                  :comment="selectedComment"
+                  :update-comment="updateCommentUtil"
                 />
               </DialogPanel>
             </TransitionChild>
@@ -148,6 +157,7 @@ import AnswerForm from "../components/AnswerForm.vue";
 import CommentForm from "../components/CommentForm.vue";
 import { useQuestion } from "../store/question";
 import { useAnswer } from "../store/answer";
+import { useAuth } from "../store/auth";
 import {
   TransitionRoot,
   TransitionChild,
@@ -159,14 +169,15 @@ const isOpen = ref(false);
 const isCommentOpen = ref(false);
 const questionStore = useQuestion();
 const answerStore = useAnswer();
+const authStore = useAuth();
 const selectedAnswer = ref(null);
+const selectedComment = ref(null);
 const route = useRoute();
 
 const question = computed(() => questionStore.getQuestion);
 
 function closeModal() {
   isOpen.value = false;
-  console.log("Modal opened");
 }
 
 function openModal() {
@@ -193,13 +204,39 @@ const addAnswer = async (answerBody) => {
 };
 
 const addComment = async (commentBody) => {
+  const questionSlug = route.params.slug;
   const payload = {
     body: commentBody,
-    answer: selectedAnswer.value.uuid, // Ensure 'id' is used if 'uuid' is not available
+    answer: selectedAnswer && selectedAnswer.value.uuid
   };
-  console.log(payload);
   await answerStore.addComment(payload);
+  await questionStore.getQuestionAction(questionSlug);
 };
+
+const updateCommentUtil = async (commentId, commentBody) => {
+    const questionSlug = route.params.slug;
+    const payload = {
+        body: commentBody,
+    };
+    await answerStore.updateComment(commentId, payload);
+    await questionStore.getQuestionAction(questionSlug);
+};
+
+const updateComment = (comment) => {
+    selectedComment.value = comment;
+    isCommentOpen.value = true;   
+}
+
+const deleteComment = async (commentId) => {
+    const questionSlug = route.params.slug;
+    await answerStore.deleteComment(commentId);
+    await questionStore.getQuestionAction(questionSlug);
+};
+
+const isCommentOwner = computed(() => {
+    return (question) => authStore.authData && question.author === authStore.authData.email;
+});
+
 
 onMounted(async () => {
   const questionSlug = route.params.slug;

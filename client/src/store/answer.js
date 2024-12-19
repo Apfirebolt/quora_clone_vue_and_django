@@ -151,13 +151,13 @@ export const useAnswer = defineStore("answer", {
       }
     },
 
-    updateComment(commentData) {
+    updateComment(commentId, commentData) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
         this.loading = true;
-        httpClient.put(`comments/${commentData.uuid}/`, commentData, {
+        httpClient.put(`comments/${commentId}/`, commentData, {
           headers,
         });
         this.loading = false;

@@ -68,7 +68,7 @@ const { closeModal, comment } = props;
 
 onMounted(() => {
   if (comment) {
-    body.value = Comment.body;
+    body.value = comment.body;
   }
 });
 
@@ -82,7 +82,7 @@ function handleSubmit(e) {
     return;
   } else {
     if (props.comment && props.updateComment) {
-      props.updateComment(body.value);
+      props.updateComment(props.comment.uuid, body.value);
     } else {
       props.addComment(body.value);
     }
