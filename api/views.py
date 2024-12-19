@@ -23,6 +23,7 @@ from api.serializers import (
     CustomTokenObtainPairSerializer,
     CustomUserSerializer,
     ListUserSerializer,
+    ProfileSerializer
 )
 from core.models import Answer, Question
 from accounts.models import CustomUser
@@ -52,9 +53,17 @@ class ProfileView(APIView):
 
     def get(self, request):
         user = request.user
-        serializer = CustomUserSerializer(user)
+        serializer = ProfileSerializer(user)
 
         return Response(serializer.data)
+    
+    def put(self, request):
+        user = request.user
+        serializer = ProfileSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ListCreateQuestionsApiView(ListCreateAPIView):

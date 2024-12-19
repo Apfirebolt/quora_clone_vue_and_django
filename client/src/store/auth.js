@@ -9,12 +9,16 @@ const toast = useToast();
 export const useAuth = defineStore("auth", {
   state: () => ({
     authData: JSON.parse(localStorage.getItem("user")) || null,
+    profileData: null,
     loading: ref(false),
   }),
 
   getters: {
     getAuthData() {
       return this.authData;
+    },
+    getProfileData() {
+      return this.profileData;
     },
     isLoading() {
       return this.loading;
@@ -52,14 +56,39 @@ export const useAuth = defineStore("auth", {
       }
     },
 
-    async getProfileData() {
+    async getProfileDataAction() {
       try {
         const headers = {
-          Authorization: `Bearer ${this.authData.token}`,
+          Authorization: `Bearer ${this.authData.access}`,
         };
+        this.loading = true;
         const response = await httpClient.get("profile", { headers });
+        if (response.data) {
+          this.profileData = response.data;
+          this.loading = false;
+        }
       } catch (error) {
         console.log(error);
+        this.loading = false
+        return error;
+      }
+    },
+
+    async updateProfileDataAction(profileData) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${this.authData.access}`,
+        };
+        console.log('Update Profile Data', headers)
+        this.loading = true;
+        const response = await httpClient.put("profile", profileData, { headers });
+        if (response.data) {
+          this.profileData = response.data;
+          this.loading = false;
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false
         return error;
       }
     },

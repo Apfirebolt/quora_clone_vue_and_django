@@ -52,6 +52,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
     
 
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'id', 'firstName', 'lastName',)
+    
+
 class ListUserSerializer(serializers.ModelSerializer):
 
     class Meta:
