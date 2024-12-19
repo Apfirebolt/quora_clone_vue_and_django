@@ -57,4 +57,10 @@ urlpatterns = [
     path(
         "answers-like/<uuid:uuid>/", apiViews.AnswerLikeAPIView.as_view(), name="answer-like"
     ),
+    path("comments", apiViews.CommentCreateAPIView.as_view(), name="comment-create"),
+    path(
+        "comments/<uuid:uuid>/",
+        apiViews.RetrieveUpdateDestroyCommentAPIView.as_view(),
+        name="comment-detail",
+    ),
 ]

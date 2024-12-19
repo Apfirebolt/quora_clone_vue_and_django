@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from accounts.models import CustomUser
-from core.models import Answer, Question
+from core.models import Answer, Question, Comment
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -105,3 +105,17 @@ class QuestionSerializer(serializers.ModelSerializer):
     
     def get_answers(self, instance):
         return AnswerSerializer(instance.answers.all(), many=True).data
+    
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+    created_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        exclude = ["id", "updated_at"]
+
+    def get_created_at(self, instance):
+        return instance.created_at.strftime("%B %d, %Y")
+    
+

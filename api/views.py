@@ -23,9 +23,10 @@ from api.serializers import (
     CustomTokenObtainPairSerializer,
     CustomUserSerializer,
     ListUserSerializer,
-    ProfileSerializer
+    ProfileSerializer,
+    CommentSerializer
 )
-from core.models import Answer, Question
+from core.models import Answer, Question, Comment
 from accounts.models import CustomUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -189,3 +190,26 @@ class AnswerLikeAPIView(APIView):
         serializer = self.serializer_class(answer, context=serializer_context)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class CommentCreateAPIView(CreateAPIView):
+    """Allow users to add a comment to an answer instance."""
+
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        request_user = self.request.user
+        kwarg_uuid = self.kwargs.get("uuid")
+        answer = get_object_or_404(Answer, uuid=kwarg_uuid)
+
+        serializer.save(author=request_user, answer=answer)
+
+
+class RetrieveUpdateDestroyCommentAPIView(RetrieveUpdateDestroyAPIView):
+    """Provide *RUD functionality for a comment instance to it's author."""
+
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    lookup_field = "uuid"

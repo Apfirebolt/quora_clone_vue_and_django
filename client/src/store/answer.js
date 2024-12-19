@@ -131,6 +131,60 @@ export const useAnswer = defineStore("answer", {
       }
     },
 
+    async addComment(commentData) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.post(`comments/`, commentData, {
+          headers,
+        });
+        if (response.status === 201) {
+          toast.success("Comment added!");
+          this.loading = false;
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
+    updateComment(commentData) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        httpClient.put(`comments/${commentData.uuid}/`, commentData, {
+          headers,
+        });
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
+    deleteComment(commentId) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        httpClient.delete(`comments/${commentId}/`, {
+          headers,
+        });
+        this.loading = false;
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
     resetAnswerData() {
       this.answer = {};
       this.answers = [];
