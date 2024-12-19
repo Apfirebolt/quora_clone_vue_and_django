@@ -87,6 +87,26 @@ export const useAnswer = defineStore("answer", {
       }
     },
 
+    async getMyAnswersAction(page = 1) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.get("my-answers?page=" + page, {
+          headers,
+        });
+        if (response.status === 200) {
+          this.answers = response.data;
+          this.loading = false;
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error
+      }
+    },
+
     async deleteAnswer(AnswerId) {
       try {
         const headers = {

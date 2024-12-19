@@ -45,6 +45,12 @@ const routes = [
         component: () => import('../views/MyQuestions.vue')
     },
     {
+        path: '/my-answers',
+        name: 'MyAnswers',
+        beforeEnter: authGuard,
+        component: () => import('../views/MyAnswers.vue')
+    },
+    {
         path: '/questions/:slug',
         name: 'QuestionDetail',
         beforeEnter: authGuard,

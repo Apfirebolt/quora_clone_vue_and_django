@@ -159,6 +159,7 @@ const authMenu = [
   { name: "Profile", path: "Profile", current: false },
   { name: "Users", path: "Users", current: false },
   { name: "MyQuestions", path: "My Questions", current: false },
+  { name: "MyAnswers", path: "My Answers", current: false },
 ];
 
 const adminMenu = [
