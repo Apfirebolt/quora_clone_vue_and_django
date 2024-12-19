@@ -200,8 +200,7 @@ class CommentCreateAPIView(CreateAPIView):
 
     def perform_create(self, serializer):
         request_user = self.request.user
-        kwarg_uuid = self.kwargs.get("uuid")
-        answer = get_object_or_404(Answer, uuid=kwarg_uuid)
+        answer = get_object_or_404(Answer, uuid=self.request.data.get("answer"))
 
         serializer.save(author=request_user, answer=answer)
 

@@ -69,6 +69,7 @@ class AnswerSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField()
     created_at = serializers.SerializerMethodField()
     question_slug = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
 
     class Meta:
         model = Answer
@@ -79,6 +80,9 @@ class AnswerSerializer(serializers.ModelSerializer):
 
     def get_question_slug(self, instance):
         return instance.question.slug
+    
+    def get_comments(self, instance):
+        return CommentSerializer(instance.comments.all(), many=True).data
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -114,6 +118,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         exclude = ["id", "updated_at"]
+        read_only_fields = ["author", "answer"]
 
     def get_created_at(self, instance):
         return instance.created_at.strftime("%B %d, %Y")
