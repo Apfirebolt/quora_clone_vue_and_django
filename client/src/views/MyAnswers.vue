@@ -186,9 +186,10 @@
     openModal();
   };
   
-  const updateAnswerUtil = async (content) => {
+  const updateAnswerUtil = async (body) => {
     // copy all the properties of the answer object and replace the content and description
-    const answer = { ...selectedAnswer.value, content };
+    const answer = { ...selectedAnswer.value, body };
+    console.log(answer);
   
     await answerStore.updateAnswer(answer);
     await answerStore.getMyAnswersAction();

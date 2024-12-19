@@ -89,7 +89,10 @@ function openModal() {
 
 const addAnswer = async (answerBody) => {
     const questionSlug = route.params.slug;
-    await answerStore.addAnswer(questionSlug, answerBody);
+    const payload = {
+        body: answerBody
+    };
+    await answerStore.addAnswer(questionSlug, payload);
     await questionStore.getQuestionAction(questionSlug);
 }
 

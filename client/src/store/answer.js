@@ -52,12 +52,17 @@ export const useAnswer = defineStore("answer", {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.put(`answers/${answerData.id}`, answerData, {
+        this.loading = true;
+        const response = await httpClient.put(`answers/${answerData.uuid}/`, answerData, {
           headers,
         });
-        toast.success("Answer updated!");
+        if (response.status === 200) {
+          this.loading = false;
+          toast.success("Answer updated!");
+        }
       } catch (error) {
         console.log(error);
+        this.loading = false;
         return error;
       }
     },

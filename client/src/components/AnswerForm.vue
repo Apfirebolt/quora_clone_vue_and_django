@@ -57,7 +57,7 @@ const props = defineProps({
 
 const body = ref('');
 const errors = ref([]);
-const { closeModal, addAnswer, updateAnswer, answer } = props;
+const { closeModal, answer } = props;
 
 onMounted(() => {
     if (answer) {
@@ -74,14 +74,10 @@ function handleSubmit(e) {
     if (errors.value.length > 0) {
         return;
     } else {
-        if (props.answer) {
-            updateAnswer({
-                body: body.value
-            });
+        if (props.answer && props.updateAnswer) {
+            props.updateAnswer(body.value);
         } else {
-            addAnswer({
-                body: body.value
-            });
+            props.addAnswer(body.value);
         }
         closeModal();
     }
