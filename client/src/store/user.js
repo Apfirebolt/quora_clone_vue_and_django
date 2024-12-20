@@ -10,7 +10,7 @@ const auth = useAuth();
 export const useUser = defineStore("user", {
   state: () => ({
     user: ref({}),
-    users: ref([]),
+    userData: ref({}),
     loading: ref(false),
   }),
 
@@ -19,7 +19,7 @@ export const useUser = defineStore("user", {
       return this.user;
     },
     getUsers() {
-      return this.users;
+      return this.userData;
     },
     isLoading() {
       return this.loading;
@@ -47,17 +47,17 @@ export const useUser = defineStore("user", {
       }
     },
 
-    async getUsersAction(page = 1) {
+    async getUsersAction(search="", page = 1) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
         this.loading = true;
-        const response = await httpClient.get("users?page=" + page, {
+        const response = await httpClient.get(`users?search=${search}&page=${page}`, {
           headers,
         });
         if (response.status === 200) {
-          this.users = response.data;
+          this.userData = response.data;
           this.loading = false;  
         }
       } catch (error) {
