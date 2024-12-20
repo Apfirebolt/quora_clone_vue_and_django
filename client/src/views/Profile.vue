@@ -10,8 +10,8 @@
         <p>Change the email address you want associated with your account.</p>
       </div>
       
-      <div class="mt-8 sm:w-full sm:max-w-lg">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="mt-8 flex w-full">
+        <div class="bg-white py-8 w-1/2 px-4 shadow sm:rounded-lg sm:px-10">
           <form class="space-y-6" @submit="handleSubmit">
             <div>
               <label
@@ -103,6 +103,58 @@
             </div>
           </form>
         </div>
+        <div class="bg-white py-8 w-1/2 px-4 shadow sm:rounded-lg sm:px-10">
+          <form class="space-y-6" @submit="handlePasswordChange">
+            <div>
+              <label
+                for="current_password"
+                class="block text-sm font-medium text-gray-700"
+              >
+                Current Password
+              </label>
+              <div class="mt-1">
+                <input
+                  id="current_password"
+                  name="current_password"
+                  v-model="current_password"
+                  type="password"
+                  required=""
+                  placeholder="Enter Current Password"
+                  class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="new_password"
+                class="block text-sm font-medium text-gray-700"
+              >
+                New Password
+              </label>
+              <div class="mt-1">
+                <input
+                  id="new_password"
+                  name="new_password"
+                  v-model="new_password"
+                  type="password"
+                  required=""
+                  placeholder="Enter New Password"
+                  class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button
+                type="submit"
+                class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2"
+              >
+                Update Password
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </section>
@@ -121,6 +173,8 @@ const email = ref("");
 const username = ref("");
 const firstName = ref("");
 const lastName = ref("");
+const current_password = ref("");
+const new_password = ref("");
 
 const profileData = computed(() => authStore.getProfileData);
 
@@ -144,6 +198,15 @@ const handleSubmit = async (e) => {
     lastName: lastName.value,
   };
   await authStore.updateProfileDataAction(payload);
+};
+
+const handlePasswordChange = async (e) => {
+  e.preventDefault();
+  let payload = {
+    current_password: current_password.value,
+    new_password: new_password.value,
+  };
+  await authStore.changePassword(payload);
 };
 
 onMounted(async () => {

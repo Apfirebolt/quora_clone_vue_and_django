@@ -93,6 +93,24 @@ export const useAuth = defineStore("auth", {
       }
     },
 
+    async changePassword (passwordData) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${this.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.put("change-password", passwordData, { headers });
+        if (response.status === 204) {
+          this.loading = false;
+          toast.success("Password changed successfully!");
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false
+        return error;
+      }
+    },
+
     logout() {
       this.authData = null;
       localStorage.removeItem("user");
