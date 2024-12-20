@@ -132,7 +132,7 @@ export const useQuestion = defineStore("question", {
           headers,
         });
         this.loading = false;
-        this.questions = response.data;
+        this.questionData = response.data;
       } catch (error) {
         console.log(error);
         this.loading = false;

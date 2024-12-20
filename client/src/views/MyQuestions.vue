@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <div class="mt-5">
+      <div v-if="questions && questions.results" class="mt-5">
         <ul class="divide-y divide-gray-200">
           <li v-for="question in filteredQuestions" :key="question.id" class="py-4">
             <div class="flex space-x-3">
@@ -195,7 +195,7 @@ function openConfirmModal() {
 }
 
 const filteredQuestions = computed(() => {
-  return questions.value.filter((question) => {
+  return questions.value && questions.value.results.filter((question) => {
     return question.content.toLowerCase().includes(searchQuery.value.toLowerCase());
   });
 });
