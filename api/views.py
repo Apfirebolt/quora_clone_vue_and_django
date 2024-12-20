@@ -14,6 +14,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils.text import slugify
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (
@@ -22,7 +24,6 @@ from api.serializers import (
     CustomUserSerializer,
     CustomTokenObtainPairSerializer,
     CustomUserSerializer,
-    ListUserSerializer,
     ProfileSerializer,
     UserDetailSerializer,
     CommentSerializer
@@ -48,6 +49,10 @@ class ListCustomUsersApiView(ListAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['username', 'email']
+    ordering_fields = ['username', 'email']
+    search_fields = ['username', 'email']
 
 
 class ProfileView(APIView):
@@ -101,6 +106,10 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['content', 'author__email']
+    ordering_fields = ['created_at', 'updated_at']
+    search_fields = ['content', 'author__email']
 
     def perform_create(self, serializer):
         serializer.save(
