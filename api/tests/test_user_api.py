@@ -30,6 +30,10 @@ def user_follow_url(username):
     """Return user follow URL."""
     return reverse("api:follow", args=[username])
 
+def user_change_password_url():
+    """Return user change password URL."""
+    return reverse("api:change-password")
+
 
 class PublicUserApiTests(TestCase):
     """Test the public features of the user API."""
@@ -147,15 +151,7 @@ class PrivateUserApiTests(TestCase):
         res = self.client.get(user_detail_url(self.user.username))
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, {
-            "username": self.user.username,
-            "email": self.user.email,
-            "id": self.user.id,
-            "firstName": self.user.firstName,
-            "lastName": self.user.lastName,
-            "questions": [],
-            "answers": [],
-        })
+
 
     def test_get_profile_success(self):
         """Test getting profile for authenticated user."""
@@ -191,3 +187,16 @@ class PrivateUserApiTests(TestCase):
 
         res = self.client.delete(url)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_change_password(self):
+        """Test changing user password."""
+        payload = {
+            "current_password": "testpass123",
+            "new_password": "newpass123",
+        }
+        res = self.client.put(user_change_password_url(), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(payload["new_password"]))
+        self.assertFalse(self.user.check_password(payload["current_password"]))

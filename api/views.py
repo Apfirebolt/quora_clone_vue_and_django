@@ -100,6 +100,25 @@ class FollowUserApiView(APIView):
         followed_user.followers.remove(user)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+
+        if not user.check_password(current_password):
+            return Response(
+                {"message": "Your current password is not correct!"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ListCreateQuestionsApiView(ListCreateAPIView):

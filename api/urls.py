@@ -8,6 +8,7 @@ urlpatterns = [
     path("login", apiViews.CustomTokenObtainPairView.as_view(), name="signin"),
     path("refresh", apiViews.TokenRefreshView.as_view(), name="refresh"),
     path("profile", apiViews.ProfileView.as_view(), name="profile"),
+    path("change-password", apiViews.ChangePasswordView.as_view(), name="change-password"),
     path("users", apiViews.ListCustomUsersApiView.as_view(), name="users"),
     path("user/<str:username>/", apiViews.UserDetailApiView.as_view(), name="user-detail"),
     path("follow/<str:username>/", apiViews.FollowUserApiView.as_view(), name="follow"),

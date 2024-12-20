@@ -17,7 +17,7 @@
         </div>
       </div>
 
-      <div class="mt-5">
+      <div v-if="answers && answers.results" class="mt-5">
         <ul class="divide-y divide-gray-200">
           <li v-for="answer in filteredAnswers" :key="answer.id" class="py-4">
             <div class="flex space-x-3">
@@ -110,11 +110,9 @@ import {
 const isOpen = ref(false);
 const isConfirmModalOpen = ref(false);
 const answerStore = useAnswer();
-const authStore = useAuth();
 const selectedAnswer = ref(null);
 const confirmMessage = ref("");
 const searchQuery = ref("");
-const router = useRouter();
 
 const answers = computed(() => answerStore.getAnswers);
 
@@ -135,7 +133,7 @@ function openConfirmModal() {
 }
 
 const filteredAnswers = computed(() => {
-  return answers.value.filter((answer) => {
+  return answers.value && answers.value.results.filter((answer) => {
     const query = searchQuery.value.toLowerCase();
     return (
       answer.body.toLowerCase().includes(query) ||
