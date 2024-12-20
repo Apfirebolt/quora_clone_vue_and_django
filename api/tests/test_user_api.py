@@ -18,6 +18,14 @@ def create_user(**params):
     """Create and return a new user."""
     return get_user_model().objects.create_user(**params)
 
+def user_detail_url(username):
+    """Return user detail URL."""
+    return reverse("api:user-detail", args=[username])
+
+def user_profile_url():
+    """Return user profile URL."""
+    return reverse("api:profile")
+
 
 class PublicUserApiTests(TestCase):
     """Test the public features of the user API."""
@@ -109,6 +117,13 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn("token", res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_get_profile_unauthorized(self):
+        """Test that profile is not accessible without authentication."""
+        self.client.force_authenticate(user=None)
+        res = self.client.get(user_profile_url())
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateUserApiTests(TestCase):
     """Test API requests that require authentication."""
@@ -121,3 +136,32 @@ class PrivateUserApiTests(TestCase):
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
+
+    
+    def test_get_user_detail(self):
+        """Test retrieving user detail for authenticated user."""
+        res = self.client.get(user_detail_url(self.user.username))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {
+            "username": self.user.username,
+            "email": self.user.email,
+            "id": self.user.id,
+            "firstName": self.user.firstName,
+            "lastName": self.user.lastName,
+            "questions": [],
+            "answers": [],
+        })
+
+    def test_get_profile_success(self):
+        """Test getting profile for authenticated user."""
+        res = self.client.get(user_profile_url())
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {
+            "username": self.user.username,
+            "email": self.user.email,
+            "id": self.user.id,
+            "firstName": self.user.firstName,
+            "lastName": self.user.lastName,
+        })

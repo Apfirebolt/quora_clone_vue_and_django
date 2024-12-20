@@ -67,7 +67,7 @@
             </div>
           </div>
         </div>
-        <p v-if="question.answers.length === 0" class="text-center text-lg text-red-800">
+        <p v-if="question && question.answers && question.answers.length === 0" class="text-center text-lg text-red-800">
           No answers found
         </p>
       </div>
