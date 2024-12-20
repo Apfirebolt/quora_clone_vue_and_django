@@ -67,6 +67,46 @@ export const useUser = defineStore("user", {
       }
     },
 
+    async followUserAction(username) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.post(`follow/${username}/`, {}, {
+          headers,
+        });
+        if (response.status === 200) {
+          this.loading = false;
+          toast.success("User followed!");
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
+    async unfollowUserAction(username) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.delete(`follow/${username}/`, {
+          headers,
+        });
+        if (response.status === 204) {
+          this.loading = false;
+          toast.success("User unfollowed!");
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
     resetuserData() {
       this.user = {};
       this.users = [];
