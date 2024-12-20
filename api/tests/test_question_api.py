@@ -18,6 +18,10 @@ def detail_url(question_id):
     """Return question detail URL"""
     return reverse('api:question-detail', args=[question_id])
 
+def question_like_url(question_id):
+    """Return question like URL"""
+    return reverse('api:question-like', args=[question_id])
+
 
 class PublicQuestionApiTests(TestCase):
     """Test the publicly available question API"""
@@ -111,5 +115,28 @@ class PrivateQuestionApiTests(TestCase):
         questions = Question.objects.filter(author=self.user)
         serializer = QuestionSerializer(questions, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_question_like(self):
+        """Test liking a question"""
+        payload = {'description': 'sample-question-1', 'content': 'Sample body 1', 'author': self.user.id}
+        res = self.client.post(QUESTION_URL, payload)
+
+        question = Question.objects.get(uuid=res.data['uuid'])
+
+        like_payload = {
+            'questionId': question.uuid,
+            'rating': 'upvote'
+        }
+
+        like_response = self.client.post(question_like_url(question.uuid), like_payload)
+        self.assertEqual(like_response.status_code, status.HTTP_200_OK)
+
+        dislike_payload = {
+            'questionId': question.uuid,
+            'rating': 'downvote'
+        }
+
+        dislike_response = self.client.post(question_like_url(question.uuid), dislike_payload)
+        self.assertEqual(dislike_response.status_code, status.HTTP_200_OK)
 
        

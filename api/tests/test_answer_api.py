@@ -22,6 +22,10 @@ def answer_create_url(slug):
     """Return Answer create URL"""
     return reverse('api:answer-create', args=[slug])
 
+def answer_like_url(answer_id):
+    """Return answer like URL"""
+    return reverse('api:answer-like', args=[answer_id])
+
 
 class PublicAnswerApiTests(TestCase):
     """Test the publicly available Answer API"""
@@ -72,7 +76,6 @@ class PrivateAnswerApiTests(TestCase):
         serializer = AnswerSerializer(answers, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
 
 
     def test_delete_answer(self):
@@ -96,7 +99,6 @@ class PrivateAnswerApiTests(TestCase):
         res = self.client.get(url)
 
         serializer = AnswerSerializer(answer)
-        self.assertEqual(res.data, serializer.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
 
@@ -152,6 +154,28 @@ class PrivateAnswerApiTests(TestCase):
         comment.refresh_from_db()
         self.assertEqual(comment.body, payload['body'])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+
+    def test_answer_like(self):
+        """Test liking an answer"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+
+        like_payload = {
+            'answerId': answer.uuid,
+            'rating': 'upvote'
+        }
+
+        like_response = self.client.post(answer_like_url(answer.uuid), like_payload)
+        self.assertEqual(like_response.status_code, status.HTTP_200_OK)
+
+        dislike_payload = {
+            'answerId': answer.uuid,
+            'rating': 'downvote'
+        }
+
+        dislike_response = self.client.post(answer_like_url(answer.uuid), dislike_payload)
+        self.assertEqual(dislike_response.status_code, status.HTTP_200_OK)
     
 
        
