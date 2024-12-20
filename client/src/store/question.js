@@ -10,7 +10,7 @@ const auth = useAuth();
 export const useQuestion = defineStore("question", {
   state: () => ({
     question: ref({}),
-    questions: ref([]),
+    questionData: ref({}),
     loading: ref(false),
   }),
 
@@ -19,7 +19,7 @@ export const useQuestion = defineStore("question", {
       return this.question;
     },
     getQuestions() {
-      return this.questions;
+      return this.questionData;
     },
     isLoading() {
       return this.loading;
@@ -32,12 +32,17 @@ export const useQuestion = defineStore("question", {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
+        this.loading = true;
         const response = await httpClient.post("questions", QuestionData, {
           headers,
         });
-        toast.success("Question added!");
+        if (response.status === 201) {
+          this.loading = false;
+          toast.success("Question added!");
+        }
       } catch (error) {
         console.log(error);
+        this.loading = false;
         return error;
       }
     },
@@ -78,15 +83,16 @@ export const useQuestion = defineStore("question", {
       }
     },
 
-    async getQuestionsAction(page = 1) {
+    async getQuestionsAction(search = "", page = 1) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
-        const response = await httpClient.get("questions?page=" + page, {
+        const response = await httpClient.get(`questions?page=${page}&search=${search}`, {
           headers,
         });
-        this.questions = response.data;
+        console.log(response.data);
+        this.questionData = response.data;
       } catch (error) {
         console.log(error);
         return error

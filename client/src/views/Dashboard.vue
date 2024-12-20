@@ -7,15 +7,18 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Latest Questions on your feed
                 </h3>
-                <button @click="openModal"
-                    class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Add Question
-                </button>
+                <div class="flex items-center space-x-4 mt-3">
+                    <button @click="openModal"
+                        class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Add Question
+                    </button>
+                    <input v-model="searchText" @input="searchQuestions" type="text" placeholder="Search questions..."
+                        class="block w-4/5 rounded-md border-primary shadow-sm focus:border-accent px-2 py-3 focus:ring-primary sm:text-sm" />
+                </div>
             </div>
-
-            <div class="mt-5">
+            <div v-if="questions && questions.results" class="mt-5">
                 <ul class="divide-y divide-gray-200">
-                    <li v-for="question in questions" :key="question.id" class="py-4">
+                    <li v-for="question in questions.results" :key="question.id" class="py-4">
                         <div class="flex space-x-3">
                             <div class="flex-1 space-y-1">
                                 <p class="text-sm font-medium text-gray-900">
@@ -94,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import QuestionForm from '../components/QuestionForm.vue';
 import ConfirmModal from '../components/Confirm.vue';
@@ -114,7 +117,26 @@ const questionStore = useQuestion();
 const authStore = useAuth();
 const selectedQuestion = ref(null);
 const confirmMessage = ref('');
+const searchText = ref('');
 const router = useRouter();
+let timeoutId;
+
+const debouncedSearch = (value) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+        if (value.length > 3) {
+            searchQuestionUtil();
+        } else {
+            questionStore.getQuestionsAction();
+        }
+    }, 1000); // Adjust delay as needed (in milliseconds)
+};
+
+watch(searchText, debouncedSearch);
+
+const searchQuestionUtil = () => {
+    questionStore.getQuestionsAction(searchText.value);
+};
 
 const questions = computed(() => questionStore.getQuestions);
 

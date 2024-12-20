@@ -24,7 +24,6 @@ from api.serializers import (
     CustomUserSerializer,
     CustomTokenObtainPairSerializer,
     CustomUserSerializer,
-    ListUserSerializer,
     ProfileSerializer,
     UserDetailSerializer,
     CommentSerializer
@@ -108,9 +107,9 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
     queryset = Question.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
-    filterset_fields = ['content', 'author']
+    filterset_fields = ['content', 'author__email']
     ordering_fields = ['created_at', 'updated_at']
-    search_fields = ['content', 'author']
+    search_fields = ['content', 'author__email']
 
     def perform_create(self, serializer):
         serializer.save(
