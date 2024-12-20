@@ -22,6 +22,9 @@ urlpatterns = [
         apiViews.RetrieveUpdateDestroyQuestionApiView.as_view(),
         name="question-detail",
     ),
+    path(
+        "questions-like/<uuid:uuid>/", apiViews.QuestionLikeAPIView.as_view(), name="question-like"
+    ),
     # my questions list
     path(
         "my-questions",

@@ -20,10 +20,10 @@ class Question(TimeStampedModel):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="questions"
     )
-    upvoted_by = models.ManyToManyField(
+    upvotes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="upvoted_questions", blank=True
     )
-    downvoted_by = models.ManyToManyField(
+    downvotes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="downvoted_questions", blank=True
     )
 

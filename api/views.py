@@ -117,6 +117,40 @@ class MyQuestionsListAPIView(ListAPIView):
         return Question.objects.filter(author=user).order_by("-created_at")
 
 
+class QuestionLikeAPIView(APIView):
+
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "slug"
+
+    def delete(self, request, slug):
+        question = get_object_or_404(Question, slug=slug)
+        user = request.user
+
+        question.upvotes.remove(user)
+        question.save()
+
+        serializer_context = {"request": request}
+        serializer = self.serializer_class(question, context=serializer_context)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, uuid):
+        question = get_object_or_404(Question, uuid=uuid)
+        rating = request.data.get("rating")
+        user = request.user
+        if rating == "upvote":
+            question.upvotes.add(user)
+        else:
+            question.downvotes.add(user)
+
+        question.save()
+        serializer_context = {"request": request}
+        serializer = self.serializer_class(question, context=serializer_context)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AnswerCreateAPIView(CreateAPIView):
     """Allow users to answer a question instance if they haven't already."""
 
@@ -189,11 +223,14 @@ class AnswerLikeAPIView(APIView):
     def post(self, request, uuid):
         """Add request.user to the voters queryset of an answer instance."""
         answer = get_object_or_404(Answer, uuid=uuid)
+        rating = request.data.get("rating")
         user = request.user
+        if rating == "upvote":
+            answer.upvotes.add(user)
+        else:
+            answer.downvotes.add(user)
 
-        answer.voters.add(user)
         answer.save()
-
         serializer_context = {"request": request}
         serializer = self.serializer_class(answer, context=serializer_context)
 

@@ -9,6 +9,20 @@
             {{ question.content }}
           </h3>
           <p class="my-3">Asked by: {{ question.author }}</p>
+          <div class="mt-2 max-w-xl text-md text-gray-500">
+            <button
+              @click="rateQuestionutil(question.uuid, 'upvote')"
+              class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Upvote
+            </button>
+            <button
+              @click="rateQuestionutil(question.uuid, 'downvote')"
+              class="mt-3 inline-flex justify-center mx-2 rounded-md border border-transparent bg-danger px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Downvote
+            </button>
+          </div>
         </div>
         <div class="mt-2 max-w-xl text-md text-gray-500">
           <button
@@ -239,6 +253,24 @@ const deleteComment = async (commentId) => {
     const questionSlug = route.params.slug;
     await answerStore.deleteComment(commentId);
     await questionStore.getQuestionAction(questionSlug);
+};
+
+const rateQuestionutil = async (questionId, rating) => {
+  const payload = {
+    rating,
+    questionId,
+  };
+  await questionStore.rateQuestion(payload);
+  await questionStore.getQuestionAction(route.params.slug);
+};
+
+const rateAnswerUtil = async (answerId, rating) => {
+  const payload = {
+    rating,
+    answerId,
+  };
+  await answerStore.rateAnswer(payload);
+  await questionStore.getQuestionAction(route.params.slug);
 };
 
 const isCommentOwner = computed(() => {

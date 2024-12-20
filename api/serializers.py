@@ -88,6 +88,8 @@ class AnswerSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     question_slug = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
+    upvoted_by = serializers.StringRelatedField(many=True, read_only=True)
+    downvoted_by = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Answer
@@ -109,6 +111,8 @@ class QuestionSerializer(serializers.ModelSerializer):
     slug = serializers.SlugField(read_only=True)
     answers_count = serializers.SerializerMethodField()
     answers = AnswerSerializer(many=True, read_only=True)
+    upvoted_by = serializers.StringRelatedField(many=True, read_only=True)
+    downvoted_by = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Question

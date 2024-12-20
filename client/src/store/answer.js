@@ -112,6 +112,28 @@ export const useAnswer = defineStore("answer", {
       }
     },
 
+    async rateAnswer(payload) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        this.loading = true;
+        const response = await httpClient.post("answers-like/" + payload.answerId + "/", {
+          rating: payload.rating,
+        }, {
+          headers,
+        });
+        if (response.status === 200) {
+          toast.success("Answer rated!");
+          this.loading = false;
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
     async deleteAnswer(AnswerId) {
       try {
         const headers = {

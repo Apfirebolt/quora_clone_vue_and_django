@@ -93,6 +93,29 @@ export const useQuestion = defineStore("question", {
       }
     },
 
+    async rateQuestion(payload) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${auth.authData.access}`,
+        };
+        console.log('payload', payload);
+        this.loading = true;
+        const response = await httpClient.post("questions-like/" + payload.questionId + "/", {
+          rating: payload.rating,
+        }, {
+          headers,
+        });
+        if (response.status === 200) {
+          toast.success("Question rated!");
+          this.loading = false;
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false;
+        return error;
+      }
+    },
+
     async getMyQuestionsAction() {
       try {
         const headers = {
