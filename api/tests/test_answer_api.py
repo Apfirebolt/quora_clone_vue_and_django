@@ -7,11 +7,12 @@ from django.urls import reverse
 from api.serializers import AnswerSerializer
 from rest_framework.test import APIClient
 from rest_framework import status
-from core.models import Answer, Question
+from core.models import Answer, Question, Comment
 
 
 QUESTION_URL = reverse('api:questions')
 MY_ANSWERS_URL = reverse('api:my-answers')
+COMMENT_URL = reverse('api:comment-create')
 
 def detail_url(Answer_id):
     """Return Answer detail URL"""
@@ -96,6 +97,60 @@ class PrivateAnswerApiTests(TestCase):
 
         serializer = AnswerSerializer(answer)
         self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+
+    def test_add_comment_to_answer(self):
+        """Test adding a comment to an answer"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+        payload = {'body': 'Sample comment 1', 'author': self.user.id, 'answer': answer.uuid}
+
+        res = self.client.post(COMMENT_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        comment = Comment.objects.get(uuid=res.data['uuid'])
+        self.assertEqual(comment.body, payload['body'])
+        self.assertEqual(comment.author.id, payload['author'])
+
+
+    def test_delete_comment(self):
+        """Test deleting a comment"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+        comment = Comment.objects.create(author=self.user, body='Sample comment 1', answer=answer)
+
+        url = reverse('api:comment-detail', args=[comment.uuid])
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Comment.objects.filter(uuid=comment.uuid).count(), 0)
+
+
+    def test_get_single_comment(self):
+        """Test retrieving a single comment"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+        comment = Comment.objects.create(author=self.user, body='Sample comment 1', answer=answer)
+
+        url = reverse('api:comment-detail', args=[comment.uuid])
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    
+    def test_update_comment(self):
+        """Test updating a comment"""
+        question = Question.objects.create(author=self.user, description='Sample question description', content='Sample body 1', slug='sample-question')
+        answer = Answer.objects.create(author=self.user, body='Sample answer 1', question=question)
+        comment = Comment.objects.create(author=self.user, body='Sample comment 1', answer=answer)
+        payload = {'body': 'Sample comment 2'}
+
+        url = reverse('api:comment-detail', args=[comment.uuid])
+        res = self.client.patch(url, payload)
+
+        comment.refresh_from_db()
+        self.assertEqual(comment.body, payload['body'])
         self.assertEqual(res.status_code, status.HTTP_200_OK)
     
 

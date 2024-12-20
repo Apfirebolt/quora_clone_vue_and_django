@@ -32,24 +32,27 @@
                   @click="updateQuestion(question)"
                   class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg"
                 >
-                  Edit
+                  <PencilIcon class="h-5 w-5" />
                 </button>
                 <button
                   @click="viewQuestion(question)"
                   class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg"
                 >
-                  View
+                  <EyeIcon class="h-5 w-5" />
                 </button>
                 <button
                   @click="deleteQuestion(question)"
                   class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
                 >
-                  Delete
+                  <TrashIcon class="h-5 w-5" />
                 </button>
               </div>
             </div>
           </li>
         </ul>
+        <p v-if="questions.length === 0" class="text-center text-lg text-red-800">
+          No questions found
+        </p>
       </div>
     </div>
     <TransitionRoot appear :show="isOpen" as="template">
@@ -147,6 +150,7 @@ import QuestionForm from "../components/QuestionForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
 import { useQuestion } from "../store/question";
 import { useAuth } from "../store/auth";
+import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";
 import {
   TransitionRoot,
   TransitionChild,
@@ -182,7 +186,7 @@ function openConfirmModal() {
 
 const addQuestion = async (content, description) => {
   await questionStore.addQuestion(content, description);
-  await questionStore.getQuestionsAction();
+  await questionStore.getMyQuestionsAction();
 };
 
 const deleteQuestion = async (question) => {
@@ -193,7 +197,7 @@ const deleteQuestion = async (question) => {
 
 const deleteQuestionUtil = async () => {
   await questionStore.deleteQuestion(selectedQuestion.value.slug);
-  await questionStore.getQuestionsAction();
+  await questionStore.getMyQuestionsAction();
   closeConfirmModal();
 };
 
@@ -207,7 +211,7 @@ const updateQuestionUtil = async (content, description) => {
   const question = { ...selectedQuestion.value, content, description };
 
   await questionStore.updateQuestion(question);
-  await questionStore.getQuestionsAction();
+  await questionStore.getMyQuestionsAction();
   closeModal();
 };
 

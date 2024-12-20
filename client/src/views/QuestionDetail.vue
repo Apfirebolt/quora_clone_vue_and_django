@@ -40,7 +40,7 @@
               <div
                 v-for="answer in question.answers"
                 :key="answer.id"
-                class="bg-gray-100 p-4 my-2 rounded-lg"
+                class="bg-gray-100 my-2 rounded-lg"
               >
                 <div class="mt-2 text-md text-gray-500">
                   <div
@@ -53,9 +53,13 @@
 
                     <div class="my-2">
                         <button v-if="isCommentOwner(comment)" @click="updateComment(comment)"
-                            class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
+                          class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                          <PencilIcon class="h-5 w-5" />
+                        </button>
                         <button v-if="isCommentOwner(comment)" @click="deleteComment(comment.uuid)"
-                            class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
+                          class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                          <TrashIcon class="h-5 w-5" />
+                        </button>
                     </div>
                   </div>
                 </div>
@@ -63,6 +67,9 @@
             </div>
           </div>
         </div>
+        <p v-if="question.answers.length === 0" class="text-center text-lg text-red-800">
+          No answers found
+        </p>
       </div>
     </div>
 
@@ -158,6 +165,7 @@ import CommentForm from "../components/CommentForm.vue";
 import { useQuestion } from "../store/question";
 import { useAnswer } from "../store/answer";
 import { useAuth } from "../store/auth";
+import { PencilIcon, TrashIcon } from "@heroicons/vue/outline";
 import {
   TransitionRoot,
   TransitionChild,

@@ -27,11 +27,17 @@
                             </div>
                             <div>
                                 <button v-if="isQuestionOwner(question)" @click="updateQuestion(question)"
-                                    class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">Edit</button>
+                                    class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                                    <PencilIcon class="h-5 w-5" />
+                                </button>
                                 <button @click="viewQuestion(question)"
-                                    class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">View</button>
+                                    class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                                    <EyeIcon class="h-5 w-5" />
+                                </button>
                                 <button v-if="isQuestionOwner(question)" @click="deleteQuestion(question)"
-                                    class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">Delete</button>
+                                    class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                                    <TrashIcon class="h-5 w-5" />
+                                </button>
                             </div>
                         </div>
                     </li>
@@ -94,6 +100,7 @@ import QuestionForm from '../components/QuestionForm.vue';
 import ConfirmModal from '../components/Confirm.vue';
 import { useQuestion } from "../store/question";
 import { useAuth } from "../store/auth";
+import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";
 import {
     TransitionRoot,
     TransitionChild,

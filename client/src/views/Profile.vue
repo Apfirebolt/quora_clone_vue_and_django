@@ -9,8 +9,6 @@
       <div class="mt-2 max-w-xl text-sm text-gray-500">
         <p>Change the email address you want associated with your account.</p>
       </div>
-
-      {{ profileData }}
       
       <div class="mt-8 sm:w-full sm:max-w-lg">
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
