@@ -28,13 +28,13 @@ export const useUser = defineStore("user", {
 
   actions: {
 
-    async getUserAction(slug) {
+    async getUserAction(username) {
       try {
         const headers = {
           Authorization: `Bearer ${auth.authData.access}`,
         };
         this.loading = true;
-        const response = await httpClient.get("users/" + slug, {
+        const response = await httpClient.get("user/" + username, {
           headers,
         });
         if (response.status === 200) {

@@ -9,6 +9,7 @@ urlpatterns = [
     path("refresh", apiViews.TokenRefreshView.as_view(), name="refresh"),
     path("profile", apiViews.ProfileView.as_view(), name="profile"),
     path("users", apiViews.ListCustomUsersApiView.as_view(), name="users"),
+    path("user/<str:username>/", apiViews.UserDetailApiView.as_view(), name="user-detail"),
     # questions create and list
     path(
         "questions",

@@ -56,6 +56,24 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('username', 'email', 'id', 'firstName', 'lastName',)
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+
+    questions = serializers.SerializerMethodField()
+    answers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers')
+
+    def get_questions(self, instance):
+        questions = Question.objects.filter(author=instance)
+        return QuestionSerializer(questions, many=True).data
+    
+    def get_answers(self, instance):
+        answers = Answer.objects.filter(author=instance)
+        return AnswerSerializer(answers, many=True).data
     
 
 class ListUserSerializer(serializers.ModelSerializer):
@@ -90,7 +108,6 @@ class QuestionSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     slug = serializers.SlugField(read_only=True)
     answers_count = serializers.SerializerMethodField()
-    user_has_answered = serializers.SerializerMethodField()
     answers = AnswerSerializer(many=True, read_only=True)
 
     class Meta:
@@ -102,10 +119,6 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     def get_answers_count(self, instance):
         return instance.answers.count()
-
-    def get_user_has_answered(self, instance):
-        request = self.context.get("request")
-        return instance.answers.filter(author=request.user).exists()
     
     def get_answers(self, instance):
         return AnswerSerializer(instance.answers.all(), many=True).data

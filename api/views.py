@@ -24,6 +24,7 @@ from api.serializers import (
     CustomUserSerializer,
     ListUserSerializer,
     ProfileSerializer,
+    UserDetailSerializer,
     CommentSerializer
 )
 from core.models import Answer, Question, Comment
@@ -65,6 +66,13 @@ class ProfileView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class UserDetailApiView(RetrieveAPIView):
+    serializer_class = UserDetailSerializer
+    queryset = CustomUser.objects.all()
+    permission_classes = [IsAuthenticated]
+    lookup_field = "username"
 
 
 class ListCreateQuestionsApiView(ListCreateAPIView):
