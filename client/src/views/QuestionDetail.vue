@@ -9,19 +9,25 @@
             {{ question.content }}
           </h3>
           <p class="my-3">Asked by: {{ question.author }}</p>
-          <div class="mt-2 max-w-xl text-md text-gray-500">
+          <p v-if="showUsersUpvotedByText" class="my-2 bg-success text-white p-2 rounded-lg">
+          {{ showUsersUpvotedByText }}
+          </p>
+          <p v-if="showUsersDownvotedByText" class="my-2 bg-danger text-white p-2 rounded-lg">
+          {{ showUsersDownvotedByText }}
+          </p>
+          <div class="mt-2 max-w-xl text-md text-gray-500 flex items-center">
             <button
-              @click="rateQuestionutil(question.uuid, 'upvote')"
-              class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Upvote
-            </button>
-            <button
-              @click="rateQuestionutil(question.uuid, 'downvote')"
-              class="mt-3 inline-flex justify-center mx-2 rounded-md border border-transparent bg-danger px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Downvote
-            </button>
+                @click="rateQuestionutil(question.uuid, 'upvote')"
+                class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Upvote
+              </button>
+              <button
+                @click="rateQuestionutil(question.uuid, 'downvote')"
+                class="mt-3 inline-flex justify-center mx-2 rounded-md border border-transparent bg-danger px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Downvote
+              </button>
           </div>
         </div>
         <div class="mt-2 max-w-xl text-md text-gray-500">
@@ -66,14 +72,20 @@
                     <p class="text-sm">Commented by: {{ comment.author }}</p>
 
                     <div class="my-2">
-                        <button v-if="isCommentOwner(comment)" @click="updateComment(comment)"
-                          class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">
-                          <PencilIcon class="h-5 w-5" />
-                        </button>
-                        <button v-if="isCommentOwner(comment)" @click="deleteComment(comment.uuid)"
-                          class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">
-                          <TrashIcon class="h-5 w-5" />
-                        </button>
+                      <button
+                        v-if="isCommentOwner(comment)"
+                        @click="updateComment(comment)"
+                        class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                      >
+                        <PencilIcon class="h-5 w-5" />
+                      </button>
+                      <button
+                        v-if="isCommentOwner(comment)"
+                        @click="deleteComment(comment.uuid)"
+                        class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                      >
+                        <TrashIcon class="h-5 w-5" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -81,7 +93,10 @@
             </div>
           </div>
         </div>
-        <p v-if="question && question.answers && question.answers.length === 0" class="text-center text-lg text-red-800">
+        <p
+          v-if="question && question.answers && question.answers.length === 0"
+          class="text-center text-lg text-red-800"
+        >
           No answers found
         </p>
       </div>
@@ -229,30 +244,30 @@ const addComment = async (commentBody) => {
   const questionSlug = route.params.slug;
   const payload = {
     body: commentBody,
-    answer: selectedAnswer && selectedAnswer.value.uuid
+    answer: selectedAnswer && selectedAnswer.value.uuid,
   };
   await answerStore.addComment(payload);
   await questionStore.getQuestionAction(questionSlug);
 };
 
 const updateCommentUtil = async (commentId, commentBody) => {
-    const questionSlug = route.params.slug;
-    const payload = {
-        body: commentBody,
-    };
-    await answerStore.updateComment(commentId, payload);
-    await questionStore.getQuestionAction(questionSlug);
+  const questionSlug = route.params.slug;
+  const payload = {
+    body: commentBody,
+  };
+  await answerStore.updateComment(commentId, payload);
+  await questionStore.getQuestionAction(questionSlug);
 };
 
 const updateComment = (comment) => {
-    selectedComment.value = comment;
-    isCommentOpen.value = true;   
-}
+  selectedComment.value = comment;
+  isCommentOpen.value = true;
+};
 
 const deleteComment = async (commentId) => {
-    const questionSlug = route.params.slug;
-    await answerStore.deleteComment(commentId);
-    await questionStore.getQuestionAction(questionSlug);
+  const questionSlug = route.params.slug;
+  await answerStore.deleteComment(commentId);
+  await questionStore.getQuestionAction(questionSlug);
 };
 
 const rateQuestionutil = async (questionId, rating) => {
@@ -273,10 +288,36 @@ const rateAnswerUtil = async (answerId, rating) => {
   await questionStore.getQuestionAction(route.params.slug);
 };
 
-const isCommentOwner = computed(() => {
-    return (question) => authStore.authData && question.author === authStore.authData.email;
+const showUsersUpvotedByText = computed(() => {
+  const upvotedUsers = questionStore.getQuestion.upvoted_users;
+  if (upvotedUsers.length === 1) {
+    return `Liked by ${upvotedUsers[0]}`;
+  } else if (upvotedUsers.length === 2) {
+    return `Liked by ${upvotedUsers[0]} and ${upvotedUsers[1]}`;
+  } else if (upvotedUsers.length > 2) {
+    return `Liked by ${upvotedUsers[0]}, ${upvotedUsers[1]} and ${upvotedUsers.length - 2} others`;
+  } else {
+    return '';
+  }
 });
 
+const showUsersDownvotedByText = computed(() => {
+  const downvotedUsers = questionStore.getQuestion.downvoted_users;
+  if (downvotedUsers.length === 1) {
+    return `Disliked by ${downvotedUsers[0]}`;
+  } else if (downvotedUsers.length === 2) {
+    return `Disliked by ${downvotedUsers[0]} and ${downvotedUsers[1]}`;
+  } else if (downvotedUsers.length > 2) {
+    return `Disliked by ${downvotedUsers[0]}, ${downvotedUsers[1]} and ${downvotedUsers.length - 2} others`;
+  } else {
+    return '';
+  }
+});
+
+const isCommentOwner = computed(() => {
+  return (question) =>
+    authStore.authData && question.author === authStore.authData.email;
+});
 
 onMounted(async () => {
   const questionSlug = route.params.slug;
