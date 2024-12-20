@@ -30,6 +30,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     firstName = models.CharField("First Name", max_length=100, blank=True, null=True)
     lastName = models.CharField("Last Name", max_length=100, blank=True, null=True)
     profilePicture = models.ImageField("Profile Picture", upload_to='profile_pictures/', blank=True, null=True)
+    following = models.ManyToManyField('self', related_name='users_following', symmetrical=False, blank=True)
+    followers = models.ManyToManyField('self', related_name='users_followers', symmetrical=False, blank=True)
     is_active = models.BooleanField('Active', default=True)
     is_staff = models.BooleanField('Staff', default=False)
     is_superuser = models.BooleanField('Super User', default=False)

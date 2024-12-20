@@ -26,6 +26,10 @@ def user_profile_url():
     """Return user profile URL."""
     return reverse("api:profile")
 
+def user_follow_url(username):
+    """Return user follow URL."""
+    return reverse("api:follow", args=[username])
+
 
 class PublicUserApiTests(TestCase):
     """Test the public features of the user API."""
@@ -165,3 +169,25 @@ class PrivateUserApiTests(TestCase):
             "firstName": self.user.firstName,
             "lastName": self.user.lastName,
         })
+
+    def test_follow_user(self):
+        """Test following a user."""
+        user2 = create_user(
+            email="testemail2@gmail.com", password="testpass123", username="Test Name 2"
+        )
+        url = user_follow_url(user2.username)
+        res = self.client.post(url)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        
+
+    def test_unfollow_user(self):
+        """Test unfollowing a user."""
+        user2 = create_user(
+            email="testemail2@gmail.com", password="testpass123", username="Test Name 2"
+        )
+        url = user_follow_url(user2.username)
+        self.client.post(url)
+
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)

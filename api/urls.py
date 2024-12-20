@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from api import views as apiViews
 
@@ -10,6 +10,7 @@ urlpatterns = [
     path("profile", apiViews.ProfileView.as_view(), name="profile"),
     path("users", apiViews.ListCustomUsersApiView.as_view(), name="users"),
     path("user/<str:username>/", apiViews.UserDetailApiView.as_view(), name="user-detail"),
+    path("follow/<str:username>/", apiViews.FollowUserApiView.as_view(), name="follow"),
     # questions create and list
     path(
         "questions",

@@ -75,6 +75,28 @@ class UserDetailApiView(RetrieveAPIView):
     lookup_field = "username"
 
 
+class FollowUserApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, username):
+        user = request.user
+        followed_user = get_object_or_404(CustomUser, username=username)
+
+        user.following.add(followed_user)
+        followed_user.followers.add(user)
+
+        return Response(status=status.HTTP_200_OK)
+    
+    def delete(self, request, username):
+        user = request.user
+        followed_user = get_object_or_404(CustomUser, username=username)
+
+        user.following.remove(followed_user)
+        followed_user.followers.remove(user)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class ListCreateQuestionsApiView(ListCreateAPIView):
     serializer_class = QuestionSerializer
     queryset = Question.objects.all()

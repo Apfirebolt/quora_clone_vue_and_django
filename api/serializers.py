@@ -62,10 +62,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     questions = serializers.SerializerMethodField()
     answers = serializers.SerializerMethodField()
+    followers = serializers.StringRelatedField(many=True, read_only=True)
+    following = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers')
+        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers', 'followers', 'following',)
 
     def get_questions(self, instance):
         questions = Question.objects.filter(author=instance)
