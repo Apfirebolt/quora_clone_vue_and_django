@@ -10,31 +10,25 @@
           </h3>
           <p class="my-3">Asked by: {{ question.author }}</p>
           <p v-if="showUsersUpvotedByText" class="my-2 bg-success text-white p-2 rounded-lg">
-          {{ showUsersUpvotedByText }}
+            {{ showUsersUpvotedByText }}
           </p>
           <p v-if="showUsersDownvotedByText" class="my-2 bg-danger text-white p-2 rounded-lg">
-          {{ showUsersDownvotedByText }}
+            {{ showUsersDownvotedByText }}
           </p>
           <div class="mt-2 max-w-xl text-md text-gray-500 flex items-center">
-            <button
-                @click="rateQuestionutil(question.uuid, 'upvote')"
-                class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Upvote
-              </button>
-              <button
-                @click="rateQuestionutil(question.uuid, 'downvote')"
-                class="mt-3 inline-flex justify-center mx-2 rounded-md border border-transparent bg-danger px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Downvote
-              </button>
+            <button @click="rateQuestionutil(question.uuid, 'upvote')"
+              class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Upvote
+            </button>
+            <button @click="rateQuestionutil(question.uuid, 'downvote')"
+              class="mt-3 inline-flex justify-center mx-2 rounded-md border border-transparent bg-danger px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+              Downvote
+            </button>
           </div>
         </div>
         <div class="mt-2 max-w-xl text-md text-gray-500">
-          <button
-            @click="openModal"
-            class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
+          <button @click="openModal"
+            class="mt-3 inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             Add Answer
           </button>
         </div>
@@ -42,61 +36,38 @@
       <div>
         <h3 class="text-xl leading-6 font-medium text-primary my-3">Answers</h3>
         <div class="mt-2 text-md text-gray-500">
-          <div
-            v-for="answer in question.answers"
-            :key="answer.id"
-            class="bg-gray-100 p-4 my-2 rounded-lg"
-          >
+          <div v-for="answer in question.answers" :key="answer.id" class="bg-gray-100 p-4 my-2 rounded-lg">
             <p>{{ answer.body }}</p>
             <p>Answered by: {{ answer.author }}</p>
-            <button
-              @click="openCommentModal(answer)"
-              class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
+            <button @click="openCommentModal(answer)"
+              class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
               Reply
             </button>
 
             <div class="mt-2 text-md text-gray-500">
-              <div
-                v-for="answer in question.answers"
-                :key="answer.id"
-                class="bg-gray-100 my-2 rounded-lg"
-              >
-                <div class="mt-2 text-md text-gray-500">
-                  <div
-                    v-for="comment in answer.comments"
-                    :key="comment.id"
-                    class="bg-primary text-white p-2 my-2 rounded-lg"
-                  >
-                    <p>{{ comment.body }}</p>
-                    <p class="text-sm">Commented by: {{ comment.author }}</p>
+              <div class="mt-2 text-md text-gray-500">
+                <div v-for="comment in answer.comments" :key="comment.id"
+                  class="bg-primary text-white p-2 my-2 rounded-lg">
+                  <p>{{ comment.body }}</p>
+                  <p class="text-sm">Commented by: {{ comment.author }}</p>
 
-                    <div class="my-2">
-                      <button
-                        v-if="isCommentOwner(comment)"
-                        @click="updateComment(comment)"
-                        class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                      >
-                        <PencilIcon class="h-5 w-5" />
-                      </button>
-                      <button
-                        v-if="isCommentOwner(comment)"
-                        @click="deleteComment(comment.uuid)"
-                        class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                      >
-                        <TrashIcon class="h-5 w-5" />
-                      </button>
-                    </div>
+                  <div class="my-2">
+                    <button v-if="isCommentOwner(comment)" @click="updateComment(comment)"
+                      class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                      <PencilIcon class="h-5 w-5" />
+                    </button>
+                    <button v-if="isCommentOwner(comment)" @click="deleteComment(comment.uuid)"
+                      class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                      <TrashIcon class="h-5 w-5" />
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <p
-          v-if="question && question.answers && question.answers.length === 0"
-          class="text-center text-lg text-red-800"
-        >
+        <p v-if="question && question.answers && question.answers.length === 0"
+          class="text-center text-lg text-red-800">
           No answers found
         </p>
       </div>
@@ -104,34 +75,18 @@
 
     <TransitionRoot appear :show="isOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
-        <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+        <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+          leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-black/25" />
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
-          <div
-            class="flex min-h-full items-center justify-center p-4 text-center"
-          >
-            <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95">
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
-              >
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <answer-form :closeModal="closeModal" :add-answer="addAnswer" />
               </DialogPanel>
             </TransitionChild>
@@ -142,40 +97,20 @@
 
     <TransitionRoot appear :show="isCommentOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
-        <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+        <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+          leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-black/25" />
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
-          <div
-            class="flex min-h-full items-center justify-center p-4 text-center"
-          >
-            <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95">
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
-              >
-                <comment-form
-                  :closeModal="closeCommentModal"
-                  :add-comment="addComment"
-                  :comment="selectedComment"
-                  :update-comment="updateCommentUtil"
-                />
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <comment-form :closeModal="closeCommentModal" :add-comment="addComment" :comment="selectedComment"
+                  :update-comment="updateCommentUtil" />
               </DialogPanel>
             </TransitionChild>
           </div>
@@ -290,11 +225,11 @@ const rateAnswerUtil = async (answerId, rating) => {
 
 const showUsersUpvotedByText = computed(() => {
   const upvotedUsers = questionStore.getQuestion.upvoted_users;
-  if (upvotedUsers.length === 1) {
+  if (upvotedUsers && upvotedUsers.length === 1) {
     return `Liked by ${upvotedUsers[0]}`;
-  } else if (upvotedUsers.length === 2) {
+  } else if (upvotedUsers && upvotedUsers.length === 2) {
     return `Liked by ${upvotedUsers[0]} and ${upvotedUsers[1]}`;
-  } else if (upvotedUsers.length > 2) {
+  } else if (upvotedUsers && upvotedUsers.length > 2) {
     return `Liked by ${upvotedUsers[0]}, ${upvotedUsers[1]} and ${upvotedUsers.length - 2} others`;
   } else {
     return '';
@@ -303,11 +238,11 @@ const showUsersUpvotedByText = computed(() => {
 
 const showUsersDownvotedByText = computed(() => {
   const downvotedUsers = questionStore.getQuestion.downvoted_users;
-  if (downvotedUsers.length === 1) {
+  if (downvotedUsers && downvotedUsers.length === 1) {
     return `Disliked by ${downvotedUsers[0]}`;
-  } else if (downvotedUsers.length === 2) {
+  } else if (downvotedUsers && downvotedUsers.length === 2) {
     return `Disliked by ${downvotedUsers[0]} and ${downvotedUsers[1]}`;
-  } else if (downvotedUsers.length > 2) {
+  } else if (downvotedUsers && downvotedUsers.length > 2) {
     return `Disliked by ${downvotedUsers[0]}, ${downvotedUsers[1]} and ${downvotedUsers.length - 2} others`;
   } else {
     return '';
