@@ -39,10 +39,26 @@
           <div v-for="answer in question.answers" :key="answer.id" class="bg-gray-100 p-4 my-2 rounded-lg">
             <p>{{ answer.body }}</p>
             <p>Answered by: {{ answer.author }}</p>
-            <button @click="openCommentModal(answer)"
-              class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-              Reply
-            </button>
+            <p v-if="showUsers(answer.upvoted_users)" class="my-2 bg-success text-white p-2 rounded-lg">
+              {{ showUsers(answer.upvoted_users) }} liked this answer
+            </p>
+            <p v-if="showUsers(answer.downvoted_users)" class="my-2 bg-danger text-white p-2 rounded-lg">
+              {{ showUsers(answer.downvoted_users) }} disliked this answer
+            </p>
+            <div class="flex items-center mt-2">
+              <button @click="openCommentModal(answer)"
+                class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                Reply
+              </button>
+              <button @click="rateAnswerUtil(answer.uuid, 'upvote')"
+                class="text-success hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                <PlusIcon class="h-5 w-5" />
+              </button>
+              <button @click="rateAnswerUtil(answer.uuid, 'downvote')"
+                class="text-danger hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                <MinusIcon class="h-5 w-5" />
+              </button>
+            </div>
 
             <div class="mt-2 text-md text-gray-500">
               <div class="mt-2 text-md text-gray-500">
@@ -129,7 +145,7 @@ import CommentForm from "../components/CommentForm.vue";
 import { useQuestion } from "../store/question";
 import { useAnswer } from "../store/answer";
 import { useAuth } from "../store/auth";
-import { PencilIcon, TrashIcon } from "@heroicons/vue/outline";
+import { PencilIcon, TrashIcon, PlusIcon, MinusIcon } from "@heroicons/vue/outline";
 import {
   TransitionRoot,
   TransitionChild,
@@ -248,6 +264,18 @@ const showUsersDownvotedByText = computed(() => {
     return '';
   }
 });
+
+const showUsers = (userArray) => {
+  if (userArray && userArray.length === 1) {
+    return userArray[0];
+  } else if (userArray && userArray.length === 2) {
+    return `${userArray[0]} and ${userArray[1]}`;
+  } else if (userArray && userArray.length > 2) {
+    return `${userArray[0]}, ${userArray[1]} and ${userArray.length - 2} others`;
+  } else {
+    return '';
+  }
+}
 
 const isCommentOwner = computed(() => {
   return (question) =>

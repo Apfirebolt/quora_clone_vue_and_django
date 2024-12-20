@@ -90,6 +90,8 @@ class AnswerSerializer(serializers.ModelSerializer):
     comments = serializers.SerializerMethodField()
     upvoted_by = serializers.StringRelatedField(many=True, read_only=True)
     downvoted_by = serializers.StringRelatedField(many=True, read_only=True)
+    upvoted_users = serializers.SerializerMethodField()
+    downvoted_users = serializers.SerializerMethodField()
 
     class Meta:
         model = Answer
@@ -104,6 +106,12 @@ class AnswerSerializer(serializers.ModelSerializer):
     def get_comments(self, instance):
         comments = Comment.objects.filter(answer=instance)
         return CommentSerializer(comments, many=True).data
+    
+    def get_upvoted_users(self, instance):
+        return instance.upvotes.all().values_list('username', flat=True)
+    
+    def get_downvoted_users(self, instance):
+        return instance.downvotes.all().values_list('username', flat=True)
 
 
 class QuestionSerializer(serializers.ModelSerializer):

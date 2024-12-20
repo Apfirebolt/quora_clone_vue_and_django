@@ -228,8 +228,10 @@ class AnswerLikeAPIView(APIView):
         rating = request.data.get("rating")
         user = request.user
         if rating == "upvote":
+            answer.downvotes.remove(user)
             answer.upvotes.add(user)
         else:
+            answer.upvotes.remove(user)
             answer.downvotes.add(user)
 
         answer.save()
