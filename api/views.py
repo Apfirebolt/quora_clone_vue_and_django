@@ -128,7 +128,16 @@ class ChangeProfilePictureView(APIView):
 
     def put(self, request):
         user = request.user
-        user.profilePicture = request.data.get("profile_picture")
+        image = request.FILES.get("image")
+
+        if image.size > 3 * 1024 * 1024:  # 3MB
+            return Response({"message": "Image size should not exceed 3MB!"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # delete old image
+        if user.profilePicture:
+            user.profilePicture.delete(save=False)
+
+        user.profilePicture = image
         user.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)

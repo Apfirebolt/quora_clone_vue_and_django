@@ -55,7 +55,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'id', 'firstName', 'lastName',)
+        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'profilePicture',)
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers', 'followers', 'following',)
+        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers', 'followers', 'following', 'profilePicture',)
 
     def get_questions(self, instance):
         questions = Question.objects.filter(author=instance)

@@ -120,10 +120,11 @@ export const useAuth = defineStore("auth", {
         const formData = new FormData();
         formData.append("image", imageData);
         this.loading = true;
-        const response = await httpClient.put("profile-image", formData, { headers });
+        const response = await httpClient.put("change-profile-image", formData, { headers });
         if (response.data) {
           this.profileData = response.data;
           this.loading = false;
+          toast.success("Profile image updated successfully!");
         }
       } catch (error) {
         console.log(error);

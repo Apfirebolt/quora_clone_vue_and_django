@@ -10,6 +10,8 @@
         <p>Change the email address you want associated with your account.</p>
       </div>
 
+      <img :src="completeImageUrl" alt="Profile Image" class="w-20 h-20 mt-3 rounded-full" />
+
       <Loader v-if="isLoading" />
       
       <div class="mt-8 flex w-full">
@@ -236,6 +238,13 @@ const isUpdateProfileImageModalOpen = ref(false);
 
 const profileData = computed(() => authStore.getProfileData);
 const isLoading = computed(() => authStore.isLoading);
+const completeImageUrl = computed(() => {
+  if (profileData.value) {
+    return `http://localhost:8000${profileData.value.profilePicture}`;
+  } else {
+    return "NO IMAGE";
+  }
+});
 
 const closeModal = () => {
   isUpdateProfileImageModalOpen.value = false;
@@ -256,7 +265,9 @@ watch(profileData, (newVal) => {
 });
 
 const updateProfilePictureUtil = async (formData) => {
-  await authStore.updateProfilePicture(formData);
+  await authStore.changeProfileImage(formData);
+  closeModal();
+  await authStore.getProfileDataAction();
 };
 
 const handleSubmit = async (e) => {
