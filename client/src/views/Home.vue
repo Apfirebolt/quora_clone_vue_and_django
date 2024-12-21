@@ -7,12 +7,27 @@
                 This is a hobby Quora clone project
             </h3>
 
-            <p class="text-gray-700 my-3">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem minima et
-                placeat distinctio soluta eaque, sapiente officia at commodi iste
-                quibusdam praesentium rerum, amet nihil. Repudiandae ea nisi autem
-                commodi?
+            <p class="mt-2 text-sm text-gray-500">
+                This project is a hobby project to learn Vue 3, Vite, Tailwind CSS, and Firebase. It is a Quora clone project where users can ask questions and answer questions.
             </p>
+
+            <p class="mt-2 text-sm text-gray-500">
+                The project is still in development. The project is open-source and available on GitHub. You can contribute to the project by fixing bugs, adding new features, and improving the project.
+                Some of the features currently available in this project are:
+            </p>
+
+            <ul class="mt-5 list-disc list-inside text-gray-500">
+                <li>Add questions</li>
+                <li>Answer questions</li>
+                <li>Add comments</li>
+                <li>Upvote and downvote questions and answers</li>
+                <li>Authentication</li>
+                <li>Authorization</li>
+                <li>Profile</li>
+                <li>Search questions and answers</li>
+                <li>Follow Users</li>
+                <li>Change Password</li>
+            </ul>
         </div>
     </section>
     <footer-component />

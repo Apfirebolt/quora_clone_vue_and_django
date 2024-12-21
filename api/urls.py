@@ -69,4 +69,14 @@ urlpatterns = [
         apiViews.RetrieveUpdateDestroyCommentAPIView.as_view(),
         name="comment-detail",
     ),
+    path(
+        "tags",
+        apiViews.ListCreateTagsApiView.as_view(),
+        name="tags",
+    ),
+    path(
+        "tags/<int:pk>/",
+        apiViews.RetrieveUpdateDestroyTagApiView.as_view(),
+        name="tag-detail",
+    ),
 ]
