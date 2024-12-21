@@ -81,6 +81,20 @@
     <DisclosurePanel class="sm:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <router-link
+          v-if="authData"
+          v-for="item in authMenu"
+          :key="item.name"
+          :to="{ name: item.name }"
+          :class="[
+            item.current
+              ? 'bg-gray-900 text-white'
+              : 'text-white hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium',
+          ]"
+          :aria-current="item.current ? 'page' : undefined"
+          >{{ item.path }}</router-link
+        >
+        <router-link
+          v-if="!authData"
           v-for="item in navigation"
           :key="item.name"
           :to="{ name: item.name }"
@@ -135,6 +149,7 @@ const authMenu = [
 ];
 
 const auth = useAuth();
+const router = useRouter();
 
 const authData = computed(() => {
   return auth.getAuthData;
