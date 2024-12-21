@@ -4,6 +4,7 @@
     <div class="px-4 py-5 sm:p-6">
       <h2 class="text-3xl my-5 text-center text-red-800">QUESTION DETAIL</h2>
       <div class="flex justify-between">
+        <Loader v-if="isQuestionLoading" />
         <div>
           <h3 class="text-lg leading-6 font-medium text-gray-900">
             {{ question.content }}
@@ -142,6 +143,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import AnswerForm from "../components/AnswerForm.vue";
 import CommentForm from "../components/CommentForm.vue";
+import Loader from "../components/Loader.vue";
 import { useQuestion } from "../store/question";
 import { useAnswer } from "../store/answer";
 import { useAuth } from "../store/auth";
@@ -163,6 +165,7 @@ const selectedComment = ref(null);
 const route = useRoute();
 
 const question = computed(() => questionStore.getQuestion);
+const isQuestionLoading = computed(() => questionStore.isLoading);
 
 function closeModal() {
   isOpen.value = false;

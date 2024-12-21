@@ -19,7 +19,9 @@
         <p>See the details of this user like questions asked and questions answered.</p>
       </div>
 
-      <div class="mt-8 sm:w-full">
+      <Loader v-if="isLoading" />
+
+      <div v-else class="mt-8 sm:w-full">
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <p>
             Number of questions asked: <span class="text-red-800">{{ user.questions ? user.questions.length : 0
@@ -50,7 +52,7 @@
             </span>
           </div>
 
-          <div>
+          <div class="mt-8 border-t border-gray-200">
             <h3 class="text-xl leading-6 font-medium text-primary my-3">
               Questions asked by {{ getFullName(user) }}
             </h3>
@@ -76,6 +78,7 @@ import { onMounted, computed } from "vue";
 import { useUser } from "../store/user";
 import { useAuth } from "../store/auth";
 import { useRoute } from "vue-router";
+import Loader from "../components/Loader.vue";
 
 const userStore = useUser();
 const route = useRoute();
@@ -87,6 +90,8 @@ const authData = computed(() => authStore.authData);
 const getFullName = (user) => {
   return user.firstName + " " + user.lastName;
 };
+
+const isLoading = computed(() => userStore.isLoading);
 
 async function followUser() {
   await userStore.followUserAction(user.value.username);

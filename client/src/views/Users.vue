@@ -3,6 +3,7 @@
   <section class="bg-white shadow sm:rounded-lg" id="about">
     <div class="px-4 py-5 sm:p-6">
       <h2 class="text-3xl my-5 text-center text-red-800">PEOPLE</h2>
+      <Loader v-if="isLoading" />
       <div>
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Connect with other users through questions and answers.
@@ -42,6 +43,7 @@
 import { onMounted, computed, watch, ref } from "vue";
 import { useUser } from "../store/user";
 import { useRouter } from "vue-router";
+import Loader from "../components/Loader.vue";
 
 const userStore = useUser();
 const router = useRouter();
@@ -62,6 +64,7 @@ const debouncedSearch = (value) => {
 watch(searchText, debouncedSearch);
 
 const users = computed(() => userStore.getUsers);
+const isLoading = computed(() => userStore.isLoading);
 
 const goToUserDetail = (user) => {
   router.push(`/users/${user.username}`);

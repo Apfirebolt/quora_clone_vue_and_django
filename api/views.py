@@ -120,6 +120,18 @@ class ChangePasswordView(APIView):
         user.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class ChangeProfilePictureView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        user.profilePicture = request.data.get("profile_picture")
+        user.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ListCreateQuestionsApiView(ListCreateAPIView):

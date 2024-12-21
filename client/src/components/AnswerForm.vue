@@ -47,11 +47,7 @@ const props = defineProps({
     answer: {
         type: Object,
         required: false,
-        default: () => {
-            return {
-                body: ''
-            }
-        }
+        default: null
     }
 });
 

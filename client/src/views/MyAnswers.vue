@@ -4,6 +4,7 @@
     <div class="px-4 py-5 sm:p-6">
       <h2 class="text-3xl my-5 text-center text-red-800">MY ANSWERS</h2>
       <div>
+        <Loader v-if="isLoading" />
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           List of answers and their questions
         </h3>
@@ -98,6 +99,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import AnswerForm from "../components/AnswerForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
+import Loader from "../components/Loader.vue";
 import { useAnswer } from "../store/answer";
 import { useAuth } from "../store/auth";
 import {
@@ -115,6 +117,7 @@ const confirmMessage = ref("");
 const searchQuery = ref("");
 
 const answers = computed(() => answerStore.getAnswers);
+const isLoading = computed(() => answerStore.isLoading);
 
 function closeModal() {
   isOpen.value = false;

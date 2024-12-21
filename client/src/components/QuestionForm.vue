@@ -28,7 +28,7 @@
         <div class="text-center">
             <button type="submit"
                 class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2">
-                Add Question
+                {{ props.question ? 'Update' : 'Add' }} Question
             </button>
             <button @click="closeModal"
                 class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white mx-2 bg-accent hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2">

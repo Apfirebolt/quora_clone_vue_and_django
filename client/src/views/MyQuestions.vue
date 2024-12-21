@@ -24,6 +24,8 @@
         </div>
       </div>
 
+      <Loader v-if="isLoading" />
+
       <div v-if="questions && questions.results" class="mt-5">
         <ul class="divide-y divide-gray-200">
           <li v-for="question in filteredQuestions" :key="question.id" class="py-4">
@@ -157,6 +159,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import QuestionForm from "../components/QuestionForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
+import Loader from "../components/Loader.vue";
 import { useQuestion } from "../store/question";
 import { useAuth } from "../store/auth";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";
@@ -177,6 +180,7 @@ const confirmMessage = ref("");
 const router = useRouter();
 
 const questions = computed(() => questionStore.getQuestions);
+const isLoading = computed(() => questionStore.isLoading);
 
 function closeModal() {
   isOpen.value = false;

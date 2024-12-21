@@ -85,6 +85,7 @@ export const useAuth = defineStore("auth", {
         if (response.data) {
           this.profileData = response.data;
           this.loading = false;
+          toast.success("Profile updated successfully!");
         }
       } catch (error) {
         console.log(error);
@@ -103,6 +104,26 @@ export const useAuth = defineStore("auth", {
         if (response.status === 204) {
           this.loading = false;
           toast.success("Password changed successfully!");
+        }
+      } catch (error) {
+        console.log(error);
+        this.loading = false
+        return error;
+      }
+    },
+
+    async changeProfileImage (imageData) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${this.authData.access}`,
+        };
+        const formData = new FormData();
+        formData.append("image", imageData);
+        this.loading = true;
+        const response = await httpClient.put("profile-image", formData, { headers });
+        if (response.data) {
+          this.profileData = response.data;
+          this.loading = false;
         }
       } catch (error) {
         console.log(error);

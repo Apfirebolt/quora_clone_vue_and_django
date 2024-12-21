@@ -9,6 +9,8 @@
       <div class="mt-2 max-w-xl text-sm text-gray-500">
         <p>Change the email address you want associated with your account.</p>
       </div>
+
+      <Loader v-if="isLoading" />
       
       <div class="mt-8 flex w-full">
         <div class="bg-white py-8 w-1/2 px-4 shadow sm:rounded-lg sm:px-10">
@@ -152,11 +154,58 @@
               >
                 Update Password
               </button>
+              <button
+                @click.prevent="openModal"
+                type="button"
+                class="py-2 px-4 mx-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2"
+              >
+                Update Profile Image
+              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
+    <TransitionRoot appear :show="isUpdateProfileImageModalOpen" as="template">
+      <Dialog as="div" @close="closeModal" class="relative z-10">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div
+            class="flex min-h-full items-center justify-center p-4 text-center"
+          >
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              >
+                <ChangeProfilePicture
+                  :closeModal="closeModal"
+                  :updateProfileImage="updateProfilePictureUtil"
+                />
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </section>
   <footer-component />
 </template>
@@ -166,6 +215,14 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useAuth } from "../store/auth";
 import router from "../routes/index";
 import FooterComponent from "../components/FooterComponent.vue";
+import ChangeProfilePicture from "../components/ChangeProfilePicture.vue";
+import Loader from "../components/Loader.vue";
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+} from "@headlessui/vue";
 
 const authStore = useAuth();
 
@@ -175,8 +232,18 @@ const firstName = ref("");
 const lastName = ref("");
 const current_password = ref("");
 const new_password = ref("");
+const isUpdateProfileImageModalOpen = ref(false);
 
 const profileData = computed(() => authStore.getProfileData);
+const isLoading = computed(() => authStore.isLoading);
+
+const closeModal = () => {
+  isUpdateProfileImageModalOpen.value = false;
+};
+
+const openModal = () => {
+  isUpdateProfileImageModalOpen.value = true;
+};
 
 // if profileData is not null and is changed then update values
 watch(profileData, (newVal) => {
@@ -187,6 +254,10 @@ watch(profileData, (newVal) => {
     lastName.value = newVal.lastName;
   }
 });
+
+const updateProfilePictureUtil = async (formData) => {
+  await authStore.updateProfilePicture(formData);
+};
 
 const handleSubmit = async (e) => {
   e.preventDefault();
