@@ -26,9 +26,10 @@ from api.serializers import (
     CustomUserSerializer,
     ProfileSerializer,
     UserDetailSerializer,
-    CommentSerializer
+    CommentSerializer,
+    TagSerializer
 )
-from core.models import Answer, Question, Comment
+from core.models import Answer, Question, Comment, Tag
 from accounts.models import CustomUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -311,3 +312,20 @@ class RetrieveUpdateDestroyCommentAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     lookup_field = "uuid"
+
+
+class ListCreateTagsApiView(ListCreateAPIView):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['name']
+    ordering_fields = ['name']
+    search_fields = ['name']
+
+
+class RetrieveUpdateDestroyTagApiView(RetrieveUpdateDestroyAPIView):
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+    permission_classes = [IsAuthenticated]
+    lookup_field = "pk"

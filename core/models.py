@@ -26,6 +26,7 @@ class Question(TimeStampedModel):
     downvotes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="downvoted_questions", blank=True
     )
+    tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
 
     def __str__(self):
         return self.content
@@ -59,5 +60,12 @@ class Comment(TimeStampedModel):
 
     def __str__(self):
         return self.author.username
+    
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
     
 
