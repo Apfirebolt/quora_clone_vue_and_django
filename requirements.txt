@@ -2,9 +2,11 @@ asgiref==3.7.2
 attrs==23.1.0
 Django==4.2.7
 django-cors-headers==4.3.1
+django-filter==24.3
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.0
 drf-spectacular==0.26.5
+Faker==36.2.2
 inflection==0.5.1
 jsonschema==4.19.2
 jsonschema-specifications==2023.11.1
@@ -24,3 +26,4 @@ sqlparse==0.4.4
 typing_extensions==4.8.0
 tzdata==2023.3
 uritemplate==4.1.1
+whitenoise==6.6.0
