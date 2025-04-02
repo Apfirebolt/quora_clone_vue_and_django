@@ -1,14 +1,11 @@
 <template>
   <header-component />
-  <section class="bg-white shadow sm:rounded-lg" id="about">
-    <div class="px-4 py-5 sm:p-6">
-      <h2 class="text-3xl my-5 text-center text-red-800">QUESTION DETAIL</h2>
+  <main class="bg-white shadow sm:rounded-lg" id="about">
+    <section class="px-4 py-5 sm:p-6 container mx-auto">
+      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">{{ question.content }}</h2>
       <div class="flex justify-between">
         <Loader v-if="isQuestionLoading" />
         <div>
-          <h3 class="text-lg leading-6 font-medium text-gray-900">
-            {{ question.content }}
-          </h3>
           <p class="my-3">Asked by: {{ question.author }}</p>
           <p v-if="showUsersUpvotedByText" class="my-2 bg-success text-white p-2 rounded-lg">
             {{ showUsersUpvotedByText }}
@@ -88,7 +85,7 @@
           No answers found
         </p>
       </div>
-    </div>
+    </section>
 
     <TransitionRoot appear :show="isOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
@@ -134,7 +131,7 @@
         </div>
       </Dialog>
     </TransitionRoot>
-  </section>
+  </main>
   <footer-component />
 </template>
 

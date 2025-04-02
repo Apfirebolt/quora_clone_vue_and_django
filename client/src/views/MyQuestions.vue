@@ -1,8 +1,8 @@
 <template>
   <header-component />
-  <section class="bg-white shadow sm:rounded-lg" id="about">
-    <div class="px-4 py-5 sm:p-6">
-      <h2 class="text-3xl my-5 text-center text-red-800">MY QUESTIONS</h2>
+  <main class="bg-white shadow sm:rounded-lg" id="about">
+    <section class="px-4 py-5 sm:p-6 container mx-auto">
+      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">MY QUESTIONS</h2>
       <div>
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           List of questions you have asked and their answers
@@ -10,7 +10,7 @@
         <div class="flex items-center space-x-4 mt-3">
           <button
             @click="openModal"
-            class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="inline-flex justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-accent shadow-sm hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Add Question
           </button>
@@ -65,7 +65,7 @@
           No questions found
         </p>
       </div>
-    </div>
+    </section>
     <TransitionRoot appear :show="isOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
         <TransitionChild
@@ -150,7 +150,7 @@
         </div>
       </Dialog>
     </TransitionRoot>
-  </section>
+  </main>
   <footer-component />
 </template>
 

@@ -1,15 +1,22 @@
 <template>
   <header-component />
-  <section class="bg-white shadow sm:rounded-lg" id="about">
-    <div class="px-4 py-5 sm:p-6">
-      <h2 class="text-3xl my-5 text-center text-red-800">PEOPLE</h2>
+  <main class="bg-white shadow sm:rounded-lg" id="about">
+    <section class="px-4 py-5 sm:p-6 container mx-auto">
+      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">
+        PEOPLE
+      </h2>
       <Loader v-if="isLoading" />
       <div>
         <h3 class="text-lg leading-6 font-medium text-gray-900">
           Connect with other users through questions and answers.
         </h3>
-        <input v-model="searchText" @input="searchUsers" type="text" placeholder="Search users..."
-          class="block rounded-md w-full border-primary shadow-sm focus:border-accent px-2 py-3 focus:ring-primary sm:text-sm" />
+        <input
+          v-model="searchText"
+          @input="searchUsers"
+          type="text"
+          placeholder="Search users..."
+          class="block rounded-md w-full border-primary shadow-sm focus:border-accent px-2 py-3 focus:ring-primary sm:text-sm"
+        />
       </div>
 
       <div v-if="users && users.results" class="mt-5">
@@ -25,8 +32,10 @@
                 </p>
               </div>
               <div>
-                <button @click="goToUserDetail(user)"
-                  class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg">
+                <button
+                  @click="goToUserDetail(user)"
+                  class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                >
                   View
                 </button>
               </div>
@@ -34,8 +43,8 @@
           </li>
         </ul>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
   <footer-component />
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <Disclosure as="nav" class="bg-accent" v-slot="{ open }">
+  <Disclosure as="nav" class="bg-neutral" v-slot="{ open }">
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 font-roboto">
       <div class="relative flex items-center justify-between h-16">
         <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">

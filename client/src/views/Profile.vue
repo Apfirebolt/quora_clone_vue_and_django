@@ -1,8 +1,9 @@
 <template>
   <header-component />
-  <section class="bg-white shadow sm:rounded-lg" id="about">
-    <div class="px-4 py-5 sm:p-6">
-      <h2 class="text-3xl my-5 text-center text-red-800">PROFILE</h2>
+  <main class="bg-white shadow sm:rounded-lg" id="about">
+    <div class="px-4 py-5 sm:p-6 container mx-auto">
+      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">PROFILE</h2>
+  
       <h3 class="text-lg leading-6 font-medium text-gray-900">
         Update your profile
       </h3>
@@ -208,7 +209,7 @@
         </div>
       </Dialog>
     </TransitionRoot>
-  </section>
+  </main>
   <footer-component />
 </template>
 
