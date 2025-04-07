@@ -156,6 +156,16 @@ SIMPLE_JWT = {
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
 }
 
+# RabbitMQ settings
+RABBITMQ_HOST = 'localhost'
+RABBITMQ_PORT = 5672
+RABBITMQ_USER = 'guest'
+RABBITMQ_PASSWORD = 'guest'
+RABBITMQ_VHOST = '/'
+RABBITMQ_EXCHANGE = 'comment_exchange'
+RABBITMQ_ROUTING_KEY = 'comment.replied'
+RABBITMQ_QUEUE = 'comment_notifications'
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 

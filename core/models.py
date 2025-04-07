@@ -1,4 +1,8 @@
 import uuid as uuid_lib
+import pika
+import json
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from django.conf import settings
 from django.db import models
@@ -67,5 +71,37 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+@receiver(post_save, sender=Comment)
+def comment_replied_handler(sender, instance, created, **kwargs):
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(
+            host=settings.RABBITMQ_HOST,
+            port=settings.RABBITMQ_PORT,
+            credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD),
+            virtual_host=settings.RABBITMQ_VHOST
+        )
+    )
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic')
+
+    message_data = {
+        'comment_id': instance.id,
+        'user_id': instance.author.id,  
+        'content': instance.body[:100], 
+        'timestamp': str(instance.created_at)
+        # Add any other relevant information
+    }
+    message = json.dumps(message_data)
+
+    channel.basic_publish(
+        exchange=settings.RABBITMQ_EXCHANGE,
+        routing_key=settings.RABBITMQ_ROUTING_KEY,
+        body=message
+    )
+    print(f"[x] Sent '{message}'")
+    connection.close()
     
 
