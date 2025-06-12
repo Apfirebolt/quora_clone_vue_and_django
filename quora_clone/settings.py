@@ -93,13 +93,14 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# Docker friendly settings, use localhost for local development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'quora',
         'USER': 'postgres',
         'PASSWORD': 'pass123',
-        'HOST': 'localhost',  
+        'HOST': 'db',  
         'PORT': '5432',        
     }
 }

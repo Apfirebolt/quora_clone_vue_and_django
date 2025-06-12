@@ -1,20 +1,25 @@
-# Use an official Python runtime as the base image
-FROM python:3.9
+FROM python:3.11-slim-buster
 
-# Set the working directory in the container
+# Set environment variables for non-interactive commands
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+# Copy only requirements.txt first to leverage Docker layer caching
+COPY requirements.txt /app/requirements.txt
 
-# Install the project dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Copy the project code into the container
-COPY . .
+# Copy the rest of your Django project
+COPY . /app
 
-# Expose the port that the Django app will run on
+
+RUN python manage.py collectstatic --noinput
+
+# Expose the port your Gunicorn server will listen on
 EXPOSE 8000
 
-# Run the Django development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "quora_clone.wsgi:application"]
