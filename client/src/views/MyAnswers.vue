@@ -24,7 +24,9 @@
             <div class="flex space-x-3">
               <div class="flex-1 space-y-1">
                 <p class="text-lg font-medium text-gray-900 my-1">
-                  {{ answer.question_slug }}
+                  <router-link :to="`/questions/${answer.question_slug}`" class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+                    {{ answer.question_slug }}
+                  </router-link>
                 </p>
                 <p class="text-sm font-medium text-gray-900">
                   {{ answer.body }}

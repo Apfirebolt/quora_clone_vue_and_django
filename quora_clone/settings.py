@@ -100,7 +100,7 @@ DATABASES = {
         'NAME': 'quora',
         'USER': 'postgres',
         'PASSWORD': 'pass123',
-        'HOST': 'db',  
+        'HOST': 'localhost',  
         'PORT': '5432',        
     }
 }
