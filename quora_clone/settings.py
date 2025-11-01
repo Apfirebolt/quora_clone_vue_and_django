@@ -20,14 +20,12 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost", 
-]
+CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1", 
+    "http://127.0.0.1",
+    "http://localhost",
+    "http://localhost:8080"
 ]
 CORS_ALLOW_CREDENTIALS = False
 
@@ -48,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_spectacular',
     'django_filters',
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
 
     'accounts',
     'core',
@@ -122,6 +122,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Elasticsearch settings
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://localhost:9200'
+    },
+}
+
+ELASTICSEARCH_DSL_AUTO_REFRESH = False
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Quora Clone API',

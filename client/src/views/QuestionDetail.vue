@@ -60,10 +60,18 @@
 
             <div class="mt-2 text-md text-gray-500">
               <div class="mt-2 text-md text-gray-500">
-                <div v-for="comment in answer.comments" :key="comment.id"
-                  class="bg-primary text-white p-2 my-2 rounded-lg">
-                  <p>{{ comment.body }}</p>
-                  <p class="text-sm">Commented by: {{ comment.author }}</p>
+                <div v-for="comment in answer.comments" :key="comment.id" class="bg-white text-primary py-3 px-2 my-2 rounded-lg">
+                  <div class="flex justify-between">
+                    <div>
+                    <p>{{ comment.body }}</p>
+                    <p class="text-sm">Commented by: {{ comment.author }}</p>
+                  </div>
+                  <div>
+                    <p>
+                      Wrote at : {{ comment.created_at }}
+                    </p>
+                  </div>
+                  </div>
 
                   <div class="my-2">
                     <button v-if="isCommentOwner(comment)" @click="updateComment(comment)"

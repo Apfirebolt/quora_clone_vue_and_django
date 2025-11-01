@@ -51,7 +51,23 @@ export const useAuth = defineStore("auth", {
           router.push("/dashboard");
         }
       } catch (error) {
-        console.log(error);
+        if (error.response?.status === 400 && error.response.data) {
+          const errors = error.response.data;
+      
+          for (const key in errors) {
+            if (Array.isArray(errors[key])) {
+              // Show each specific error message
+              errors[key].forEach(message => {
+                // Prepend the field name for clarity (e.g., "password: Ensure this...")
+                const errorMessage = `${key}: ${message}`; 
+                toast.error(errorMessage);
+              });
+            } else {
+                // Handle non-array errors if your backend sends them (less common for validation)
+                toast.error(`${key}: ${errors[key]}`);
+            }
+          }
+        }
         return error;
       }
     },
