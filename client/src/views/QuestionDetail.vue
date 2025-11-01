@@ -144,40 +144,56 @@
               </button>
             </div>
 
-            <div class="mt-2 text-md text-gray-500">
-              <div class="mt-2 text-md text-gray-500">
-                <div
-                  v-for="comment in answer.comments"
-                  :key="comment.id"
-                  class="bg-white text-primary py-3 px-2 my-2 rounded-lg"
-                >
-                  <div class="flex justify-between">
-                    <div>
-                      <p>{{ comment.body }}</p>
-                      <p class="text-sm">Commented by: {{ comment.author }}</p>
+            <div v-if="answer.comments && answer.comments.length > 0" class="mt-4">
+              <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+              <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Comments ({{ answer.comments.length }})
+              </h4>
+              <div class="space-y-3">
+              <div
+                v-for="comment in answer.comments"
+                :key="comment.id"
+                class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200"
+              >
+                <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <p class="text-gray-800 text-sm leading-relaxed mb-2">{{ comment.body }}</p>
+                  <div class="flex items-center space-x-4 text-xs text-gray-500">
+                  <div class="flex items-center space-x-1">
+                    <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span class="text-white text-xs font-semibold">{{ comment.author.charAt(0).toUpperCase() }}</span>
                     </div>
-                    <div>
-                      <p>Wrote at : {{ comment.created_at }}</p>
-                    </div>
+                    <span class="font-medium">{{ comment.author }}</span>
                   </div>
-
-                  <div class="my-2">
-                    <button
-                      v-if="isCommentOwner(comment)"
-                      @click="updateComment(comment)"
-                      class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                    >
-                      <PencilIcon class="h-5 w-5" />
-                    </button>
-                    <button
-                      v-if="isCommentOwner(comment)"
-                      @click="deleteComment(comment.uuid)"
-                      class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                    >
-                      <TrashIcon class="h-5 w-5" />
-                    </button>
+                  <div class="flex items-center space-x-1">
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{{ comment.created_at }}</span>
+                  </div>
                   </div>
                 </div>
+                
+                <div v-if="isCommentOwner(comment)" class="flex items-center space-x-1 ml-4">
+                  <button
+                  @click="updateComment(comment)"
+                  class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors duration-200 group"
+                  title="Edit comment"
+                  >
+                  <PencilIcon class="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  </button>
+                  <button
+                  @click="deleteComment(comment.uuid)"
+                  class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors duration-200 group"
+                  title="Delete comment"
+                  >
+                  <TrashIcon class="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  </button>
+                </div>
+                </div>
+              </div>
               </div>
             </div>
           </div>
