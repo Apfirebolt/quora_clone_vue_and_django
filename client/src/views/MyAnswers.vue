@@ -2,7 +2,7 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <div class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">MY ANSWERS</h2>
+      <SectionHeader title="My Answers" subtitle="Overview of your answers and their questions" />
       <div>
         <Loader v-if="isLoading" />
         <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -102,6 +102,7 @@ import { useRouter } from "vue-router";
 import AnswerForm from "../components/AnswerForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
 import Loader from "../components/Loader.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 import { useAnswer } from "../store/answer";
 import { useAuth } from "../store/auth";
 import {

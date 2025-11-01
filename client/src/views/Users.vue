@@ -2,14 +2,9 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <section class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">
-        PEOPLE
-      </h2>
+      <SectionHeader title="Users" subtitle="Browse and search for users on the platform" />
       <Loader v-if="isLoading" />
       <div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Connect with other users through questions and answers.
-        </h3>
         <input
           v-model="searchText"
           @input="searchUsers"
@@ -53,6 +48,7 @@ import { onMounted, computed, watch, ref } from "vue";
 import { useUser } from "../store/user";
 import { useRouter } from "vue-router";
 import Loader from "../components/Loader.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 
 const userStore = useUser();
 const router = useRouter();

@@ -26,12 +26,12 @@
                 :key="item.name"
                 :to="{ name: item.name }"
                 :class="[
-                  item.current
-                    ? 'bg-gray-900 text-white'
+                  isCurrentRoute(item.name)
+                    ? 'bg-gray-900 text-white border-b-2 border-blue-500'
                     : 'text-white hover:bg-gray-700 hover:text-white',
-                  'px-3 py-2 rounded-md text-sm font-medium',
+                  'px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200',
                 ]"
-                :aria-current="item.current ? 'page' : undefined"
+                :aria-current="isCurrentRoute(item.name) ? 'page' : undefined"
                 >{{ item.path }}</router-link
               >
               <router-link
@@ -40,12 +40,12 @@
                 :key="item.name"
                 :to="{ name: item.name }"
                 :class="[
-                  item.current
-                    ? 'bg-gray-900 text-white'
+                  isCurrentRoute(item.name)
+                    ? 'bg-gray-900 text-white border-b-2 border-blue-500'
                     : 'text-white hover:bg-gray-700 hover:text-white',
-                  'px-3 py-2 rounded-md text-sm font-medium',
+                  'px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200',
                 ]"
-                :aria-current="item.current ? 'page' : undefined"
+                :aria-current="isCurrentRoute(item.name) ? 'page' : undefined"
                 >{{ item.name }}</router-link
               >
               <button
@@ -86,11 +86,12 @@
           :key="item.name"
           :to="{ name: item.name }"
           :class="[
-            item.current
-              ? 'bg-gray-900 text-white'
-              : 'text-white hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium',
+            isCurrentRoute(item.name)
+              ? 'bg-gray-900 text-white border-l-4 border-blue-500'
+              : 'text-white hover:bg-gray-700 hover:text-white',
+            'block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200',
           ]"
-          :aria-current="item.current ? 'page' : undefined"
+          :aria-current="isCurrentRoute(item.name) ? 'page' : undefined"
           >{{ item.path }}</router-link
         >
         <router-link
@@ -99,16 +100,17 @@
           :key="item.name"
           :to="{ name: item.name }"
           :class="[
-            item.current
-              ? 'bg-gray-900 text-white'
-              : 'text-white hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium',
+            isCurrentRoute(item.name)
+              ? 'bg-gray-900 text-white border-l-4 border-blue-500'
+              : 'text-white hover:bg-gray-700 hover:text-white',
+            'block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200',
           ]"
-          :aria-current="item.current ? 'page' : undefined"
+          :aria-current="isCurrentRoute(item.name) ? 'page' : undefined"
           >{{ item.name }}</router-link
         >
         <button v-if="authData"
           @click="logOutUtil"
-          class="text-gray-500 w-full hover:bg-gray-700 hover:text-white px-3 py-2 rounded-mdfont-medium"
+          class="text-gray-500 w-full hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium"
         >
           Log Out
         </button>
@@ -118,8 +120,8 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useAuth } from "../store/auth";
 import logo from '../assets/1.png';
 import {
@@ -150,10 +152,15 @@ const authMenu = [
 
 const auth = useAuth();
 const router = useRouter();
+const route = useRoute();
 
 const authData = computed(() => {
   return auth.getAuthData;
 });
+
+const isCurrentRoute = (routeName) => {
+  return route.name === routeName;
+};
 
 const logOutUtil = () => {
   auth.logout();

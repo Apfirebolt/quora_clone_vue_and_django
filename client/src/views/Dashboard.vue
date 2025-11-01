@@ -2,14 +2,12 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <div class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">
-        DASHBOARD
-      </h2>
-
+      <section-header
+        title="Dashboard"
+        subtitle="Get the latest questions from people and topics you follow. Stay informed and engaged through sharing your opinions."
+      />
       <div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Latest Questions on your feed
-        </h3>
+        
         <div class="flex items-center space-x-4 mt-3">
           <button
             @click="openModal"
@@ -162,6 +160,7 @@ import { ref, watch, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import QuestionForm from "../components/QuestionForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 import { useQuestion } from "../store/question";
 import { useAuth } from "../store/auth";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";
