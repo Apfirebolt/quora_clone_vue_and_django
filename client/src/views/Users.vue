@@ -2,7 +2,10 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <section class="px-4 py-5 sm:p-6 container mx-auto">
-      <SectionHeader title="Users" subtitle="Browse and search for users on the platform" />
+      <SectionHeader
+        title="Users"
+        subtitle="Browse and search for users on the platform"
+      />
       <Loader v-if="isLoading" />
       <div>
         <input
@@ -15,28 +18,35 @@
       </div>
 
       <div v-if="users && users.results" class="mt-5">
-        <ul class="divide-y divide-gray-200">
-          <li v-for="user in users.results" :key="user.id" class="py-4">
-            <div class="flex space-x-3">
-              <div class="flex-1 space-y-1">
-                <p class="text-sm font-medium text-gray-900">
-                  {{ user.email }}
-                </p>
-                <p class="text-sm text-gray-500">
-                  {{ user.username }}
-                </p>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-for="user in users.results"
+            :key="user.id"
+            class="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden"
+          >
+            <div class="p-6">
+              <div class="flex items-center space-x-4 mb-4">
+                
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                    {{ user.username }}
+                  </h3>
+                  <p class="text-sm text-gray-600">
+                    {{ user.email }}
+                  </p>
+                </div>
               </div>
-              <div>
+              <div class="pt-4 border-t border-gray-100">
                 <button
                   @click="goToUserDetail(user)"
-                  class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                  class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
-                  View
+                  View Profile
                 </button>
               </div>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
     </section>
   </main>
