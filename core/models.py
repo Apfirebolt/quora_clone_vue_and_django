@@ -73,6 +73,18 @@ class Tag(models.Model):
         return self.name
     
 
+class Notification(TimeStampedModel):
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
+    )
+    message = models.CharField(max_length=255)
+    category = models.CharField(max_length=50)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Notification for {self.recipient.username} - {self.message} ({self.category})"
+
+
 @receiver(post_save, sender=Comment)
 def comment_replied_handler(sender, instance, created, **kwargs):
     connection = pika.BlockingConnection(
@@ -104,5 +116,41 @@ def comment_replied_handler(sender, instance, created, **kwargs):
     print(f"[x] Sent '{message}'")
     print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, settings.RABBITMQ_ROUTING_KEY)
     connection.close()
-    
+
+
+@receiver(post_save, sender=Answer)
+def answer_notification_handler(sender, instance, created, **kwargs):
+    if created:
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=settings.RABBITMQ_HOST,
+                port=settings.RABBITMQ_PORT,
+                credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD),
+                virtual_host=settings.RABBITMQ_VHOST
+            )
+        )
+        channel = connection.channel()
+
+        channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic')
+
+        message_data = {
+            'answer_id': instance.id,
+            'question_id': instance.question.id,
+            'question_author_id': instance.question.author.id,
+            'answer_author_id': instance.author.id,
+            'answer_content': instance.body[:100],
+            'question_content': instance.question.content,
+            'timestamp': str(instance.created_at)
+        }
+        message = json.dumps(message_data)
+
+        channel.basic_publish(
+            exchange=settings.RABBITMQ_EXCHANGE,
+            routing_key=settings.RABBITMQ_ROUTING_KEY,
+            body=message
+        )
+
+        print(f"[x] Sent answer notification: '{message}'")
+        connection.close()
+
 

@@ -174,7 +174,7 @@ RABBITMQ_PASSWORD = 'guest'
 RABBITMQ_VHOST = '/'
 RABBITMQ_EXCHANGE = 'comment_exchange'
 RABBITMQ_ROUTING_KEY = 'comment.replied'
-RABBITMQ_QUEUE = 'comment_notifications'
+RABBITMQ_QUEUE = 'answer_notification_queue'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

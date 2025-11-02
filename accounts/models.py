@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from core.models import Notification
 
 
 class CustomUserManager(BaseUserManager):
