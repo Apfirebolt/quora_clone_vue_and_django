@@ -102,6 +102,7 @@ def comment_replied_handler(sender, instance, created, **kwargs):
         body=message
     )
     print(f"[x] Sent '{message}'")
+    print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, settings.RABBITMQ_ROUTING_KEY)
     connection.close()
     
 

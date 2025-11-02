@@ -4,6 +4,11 @@
     <section class="px-4 py-5 sm:p-6 container mx-auto">
       <section-header
         :title="question ? question.content : 'Loading Question...'"
+        :subtitle="
+          question && question.description
+            ? question.description
+            : 'No description provided'
+        "
       />
       <div
         class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6 mb-8"
@@ -341,7 +346,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                class="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
                 <answer-form :closeModal="closeModal" :add-answer="addAnswer" />
               </DialogPanel>

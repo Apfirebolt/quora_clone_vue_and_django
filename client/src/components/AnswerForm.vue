@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+  <div class="max-w-xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
     <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
       <h2 class="text-xl font-semibold text-white text-center">
         {{ answer ? "Edit Answer" : "Add Answer" }}
