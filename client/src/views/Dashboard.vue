@@ -2,14 +2,12 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <div class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">
-        DASHBOARD
-      </h2>
-
+      <section-header
+        title="Dashboard"
+        subtitle="Get the latest questions from people and topics you follow. Stay informed and engaged through sharing your opinions."
+      />
       <div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Latest Questions on your feed
-        </h3>
+        
         <div class="flex items-center space-x-4 mt-3">
           <button
             @click="openModal"
@@ -33,38 +31,13 @@
             :key="question.id"
             class="py-4"
           >
-            <div class="flex space-x-3">
-              <div class="flex-1 space-y-1">
-                <p class="text-sm font-medium text-gray-900">
-                  {{ question.content }}
-                </p>
-                <p class="text-sm text-gray-500">
-                  {{ question.description }}
-                </p>
-              </div>
-              <div>
-                <button
-                  v-if="isQuestionOwner(question)"
-                  @click="updateQuestion(question)"
-                  class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                >
-                  <PencilIcon class="h-5 w-5" />
-                </button>
-                <button
-                  @click="viewQuestion(question)"
-                  class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                >
-                  <EyeIcon class="h-5 w-5" />
-                </button>
-                <button
-                  v-if="isQuestionOwner(question)"
-                  @click="deleteQuestion(question)"
-                  class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-                >
-                  <TrashIcon class="h-5 w-5" />
-                </button>
-              </div>
-            </div>
+            <question-card
+              :question="question"
+              :deleteQuestion="deleteQuestion"
+              :updateQuestion="updateQuestion"
+              :viewQuestion="viewQuestion"
+              :isQuestionOwner="isQuestionOwner"
+            />
           </li>
         </ul>
       </div>
@@ -97,7 +70,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                class="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
                 <question-form
                   :closeModal="closeModal"
@@ -162,6 +135,8 @@ import { ref, watch, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import QuestionForm from "../components/QuestionForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
+import QuestionCard from "../components/QuestionCard.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 import { useQuestion } from "../store/question";
 import { useAuth } from "../store/auth";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";

@@ -2,16 +2,17 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <div class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">PROFILE</h2>
-  
-      <h3 class="text-lg leading-6 font-medium text-gray-900">
-        Update your profile
-      </h3>
+      <SectionHeader title="Profile" subtitle="Update your profile information" />
       <div class="mt-2 max-w-xl text-sm text-gray-500">
         <p>Change the email address you want associated with your account.</p>
       </div>
 
-      <img :src="completeImageUrl" alt="Profile Image" class="w-20 h-20 mt-3 rounded-full" />
+      <div v-if="profileData && profileData.profilePicture" class="mt-3">
+        <img :src="completeImageUrl" alt="Profile Image" class="w-20 h-20 rounded-full" />
+      </div>
+      <div v-else class="mt-3 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm text-gray-600">Please upload your profile image</p>
+      </div>
 
       <Loader v-if="isLoading" />
       
@@ -219,6 +220,7 @@ import { useAuth } from "../store/auth";
 import router from "../routes/index";
 import FooterComponent from "../components/FooterComponent.vue";
 import ChangeProfilePicture from "../components/ChangeProfilePicture.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 import Loader from "../components/Loader.vue";
 import {
   TransitionRoot,

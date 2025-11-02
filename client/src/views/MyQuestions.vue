@@ -2,11 +2,8 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <section class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">MY QUESTIONS</h2>
+      <SectionHeader title="My Questions" subtitle="Overview of your questions and their answers" />
       <div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          List of questions you have asked and their answers
-        </h3>
         <div class="flex items-center space-x-4 mt-3">
           <button
             @click="openModal"
@@ -28,34 +25,37 @@
 
       <div v-if="questions && questions.results" class="mt-5">
         <ul class="divide-y divide-gray-200">
-          <li v-for="question in filteredQuestions" :key="question.id" class="py-4">
-            <div class="flex space-x-3">
-              <div class="flex-1 space-y-1">
-                <p class="text-sm font-medium text-gray-900">
+          <li v-for="question in filteredQuestions" :key="question.id" class="py-6 border-l-4 border-blue-500 pl-4 bg-gradient-to-r from-blue-50 to-white rounded-lg mb-4 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <div class="flex justify-between items-start">
+              <div class="flex-1 space-y-3">
+                <h3 class="text-lg font-semibold text-gray-800 leading-tight">
                   {{ question.content }}
-                </p>
-                <p class="text-sm text-gray-500">
+                </h3>
+                <p class="text-sm text-gray-600 leading-relaxed">
                   {{ question.description }}
                 </p>
               </div>
-              <div>
+              <div class="flex space-x-2 ml-4">
                 <button
                   @click="updateQuestion(question)"
-                  class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                  class="bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800 p-2 rounded-full transition-colors duration-200 shadow-sm"
+                  title="Edit Question"
                 >
-                  <PencilIcon class="h-5 w-5" />
+                  <PencilIcon class="h-4 w-4" />
                 </button>
                 <button
                   @click="viewQuestion(question)"
-                  class="text-green-600 hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                  class="bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 p-2 rounded-full transition-colors duration-200 shadow-sm"
+                  title="View Question"
                 >
-                  <EyeIcon class="h-5 w-5" />
+                  <EyeIcon class="h-4 w-4" />
                 </button>
                 <button
                   @click="deleteQuestion(question)"
-                  class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
+                  class="bg-red-100 text-red-700 hover:bg-red-200 hover:text-red-800 p-2 rounded-full transition-colors duration-200 shadow-sm"
+                  title="Delete Question"
                 >
-                  <TrashIcon class="h-5 w-5" />
+                  <TrashIcon class="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -94,7 +94,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                class="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
                 <question-form
                   :closeModal="closeModal"
@@ -159,6 +159,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import QuestionForm from "../components/QuestionForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 import Loader from "../components/Loader.vue";
 import { useQuestion } from "../store/question";
 import { useAuth } from "../store/auth";

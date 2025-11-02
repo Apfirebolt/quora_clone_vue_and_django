@@ -2,12 +2,9 @@
   <header-component />
   <main class="bg-white shadow sm:rounded-lg" id="about">
     <div class="px-4 py-5 sm:p-6 container mx-auto">
-      <h2 class="text-3xl my-5 text-center text-primary bg-accent py-2">MY ANSWERS</h2>
+      <SectionHeader title="My Answers" subtitle="Overview of your answers and their questions" />
       <div>
         <Loader v-if="isLoading" />
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          List of answers and their questions
-        </h3>
         <div class="flex items-center space-x-4 mt-3">
           <button @click="openModal"
             class="inline-flex justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-accent shadow-sm hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -19,33 +16,35 @@
       </div>
 
       <div v-if="answers && answers.results" class="mt-5">
-        <ul class="divide-y divide-gray-200">
-          <li v-for="answer in filteredAnswers" :key="answer.id" class="py-4">
-            <div class="flex space-x-3">
-              <div class="flex-1 space-y-1">
-                <p class="text-lg font-medium text-gray-900 my-1">
-                  <router-link :to="`/questions/${answer.question_slug}`" class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
-                    {{ answer.question_slug }}
-                  </router-link>
-                </p>
-                <p class="text-sm font-medium text-gray-900">
-                  {{ answer.body }}
-                </p>
-                <span class="text-sm font-medium text-gray-900">{{ answer.created_at }}</span>
-              </div>
-              <div>
-                <button @click="updateAnswer(answer)"
-                  class="text-blue-600 hover:text-blue-900 mx-2 px-2 py-1 rounded-md shadow-lg">
-                  Edit
-                </button>
-                <button @click="deleteAnswer(answer)"
-                  class="text-red-600 hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg">
-                  Delete
-                </button>
-              </div>
+        <div class="grid gap-6 md:grid-cols-2">
+          <div v-for="answer in filteredAnswers" :key="answer.id" 
+           class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
+        <div class="flex flex-col h-full">
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">
+          <router-link :to="`/questions/${answer.question_slug}`" 
+               class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+            {{ answer.question_slug }}
+          </router-link>
+            </h3>
+            <p class="text-gray-700 text-sm mb-4 line-clamp-3">
+          {{ answer.body }}
+            </p>
+            <span class="text-xs text-gray-500">{{ answer.created_at }}</span>
+          </div>
+            <div class="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-200">
+            <button @click="updateAnswer(answer)"
+              class="inline-flex items-center px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200">
+              <PencilIcon class="h-5 w-5 mr-1" />
+            </button>
+            <button @click="deleteAnswer(answer)"
+              class="inline-flex items-center px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200">
+              <TrashIcon class="h-5 w-5 mr-1" />
+            </button>
             </div>
-          </li>
-        </ul>
+        </div>
+          </div>
+        </div>
       </div>
     </div>
     <TransitionRoot appear :show="isOpen" as="template">
@@ -102,8 +101,11 @@ import { useRouter } from "vue-router";
 import AnswerForm from "../components/AnswerForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
 import Loader from "../components/Loader.vue";
+import SectionHeader from "../components/SectionHeader.vue";
 import { useAnswer } from "../store/answer";
 import { useAuth } from "../store/auth";
+// import icons here
+import { PencilIcon, TrashIcon } from "@heroicons/vue/outline";
 import {
   TransitionRoot,
   TransitionChild,
