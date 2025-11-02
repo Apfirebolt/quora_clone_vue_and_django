@@ -109,91 +109,197 @@
             :key="answer.id"
             class="bg-gray-100 p-4 my-2 rounded-lg"
           >
-            <p>{{ answer.body }}</p>
-            <p>Answered by: {{ answer.author }}</p>
-            <p
-              v-if="showUsers(answer.upvoted_users)"
-              class="my-2 bg-success text-white p-2 rounded-lg"
+            <div
+              class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200"
             >
-              {{ showUsers(answer.upvoted_users) }} liked this answer
-            </p>
-            <p
-              v-if="showUsers(answer.downvoted_users)"
-              class="my-2 bg-danger text-white p-2 rounded-lg"
-            >
-              {{ showUsers(answer.downvoted_users) }} disliked this answer
-            </p>
-            <div class="flex items-center mt-2">
-              <button
-                @click="openCommentModal(answer)"
-                class="mt-2 inline-flex justify-center rounded-md border border-transparent bg-success px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                Reply
-              </button>
-              <button
-                @click="rateAnswerUtil(answer.uuid, 'upvote')"
-                class="text-success hover:text-green-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-              >
-                <PlusIcon class="h-5 w-5" />
-              </button>
-              <button
-                @click="rateAnswerUtil(answer.uuid, 'downvote')"
-                class="text-danger hover:text-red-900 mx-2 px-2 py-1 rounded-md shadow-lg"
-              >
-                <MinusIcon class="h-5 w-5" />
-              </button>
-            </div>
+              <!-- Answer Content -->
+              <div class="mb-4">
+                <p class="text-gray-800 text-base leading-relaxed">
+                  {{ answer.body }}
+                </p>
+              </div>
 
-            <div v-if="answer.comments && answer.comments.length > 0" class="mt-4">
-              <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-              <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              Comments ({{ answer.comments.length }})
-              </h4>
-              <div class="space-y-3">
-              <div
-                v-for="comment in answer.comments"
-                :key="comment.id"
-                class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200"
-              >
-                <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <p class="text-gray-800 text-sm leading-relaxed mb-2">{{ comment.body }}</p>
-                  <div class="flex items-center space-x-4 text-xs text-gray-500">
-                  <div class="flex items-center space-x-1">
-                    <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span class="text-white text-xs font-semibold">{{ comment.author.charAt(0).toUpperCase() }}</span>
-                    </div>
-                    <span class="font-medium">{{ comment.author }}</span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>{{ comment.created_at }}</span>
-                  </div>
-                  </div>
-                </div>
-                
-                <div v-if="isCommentOwner(comment)" class="flex items-center space-x-1 ml-4">
-                  <button
-                  @click="updateComment(comment)"
-                  class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors duration-200 group"
-                  title="Edit comment"
+              <!-- Author Info -->
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                  <div
+                    class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"
                   >
-                  <PencilIcon class="h-4 w-4 group-hover:scale-110 transition-transform" />
-                  </button>
-                  <button
-                  @click="deleteComment(comment.uuid)"
-                  class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors duration-200 group"
-                  title="Delete comment"
-                  >
-                  <TrashIcon class="h-4 w-4 group-hover:scale-110 transition-transform" />
-                  </button>
-                </div>
+                    <span class="text-white text-sm font-semibold">{{
+                      answer.author.charAt(0).toUpperCase()
+                    }}</span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-700">
+                      {{ answer.author }}
+                    </p>
+                    <p class="text-xs text-gray-500">Answered</p>
+                  </div>
                 </div>
               </div>
+
+              <!-- Vote Statistics -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                <div
+                  v-if="showUsers(answer.upvoted_users)"
+                  class="flex items-center space-x-2 bg-green-50 border border-green-200 rounded-lg p-3"
+                >
+                  <div
+                    class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                  >
+                    <PlusIcon class="h-3 w-3 text-white" />
+                  </div>
+                  <p class="text-sm text-green-700 font-medium">
+                    {{ showUsers(answer.upvoted_users) }} liked this answer
+                  </p>
+                </div>
+
+                <div
+                  v-if="showUsers(answer.downvoted_users)"
+                  class="flex items-center space-x-2 bg-red-50 border border-red-200 rounded-lg p-3"
+                >
+                  <div
+                    class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+                  >
+                    <MinusIcon class="h-3 w-3 text-white" />
+                  </div>
+                  <p class="text-sm text-red-700 font-medium">
+                    {{ showUsers(answer.downvoted_users) }} disliked this answer
+                  </p>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div
+                class="flex items-center justify-between pt-4 border-t border-gray-100"
+              >
+                <button
+                  @click="openCommentModal(answer)"
+                  class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  <svg
+                    class="h-4 w-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                  Reply
+                </button>
+
+                <div class="flex items-center space-x-2">
+                  <button
+                    @click="rateAnswerUtil(answer.uuid, 'upvote')"
+                    class="inline-flex items-center px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  >
+                    <PlusIcon class="h-4 w-4" />
+                  </button>
+                  <button
+                    @click="rateAnswerUtil(answer.uuid, 'downvote')"
+                    class="inline-flex items-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 hover:text-red-800 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    <MinusIcon class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-if="answer.comments && answer.comments.length > 0"
+              class="mt-4"
+            >
+              <h4
+                class="text-sm font-semibold text-gray-700 mb-3 flex items-center"
+              >
+                <svg
+                  class="h-4 w-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+                Comments ({{ answer.comments.length }})
+              </h4>
+              <div class="space-y-3">
+                <div
+                  v-for="comment in answer.comments"
+                  :key="comment.id"
+                  class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <p class="text-gray-800 text-sm leading-relaxed mb-2">
+                        {{ comment.body }}
+                      </p>
+                      <div
+                        class="flex items-center space-x-4 text-xs text-gray-500"
+                      >
+                        <div class="flex items-center space-x-1">
+                          <div
+                            class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"
+                          >
+                            <span class="text-white text-xs font-semibold">{{
+                              comment.author.charAt(0).toUpperCase()
+                            }}</span>
+                          </div>
+                          <span class="font-medium">{{ comment.author }}</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                          <svg
+                            class="h-3 w-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <span>{{ comment.created_at }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="isCommentOwner(comment)"
+                      class="flex items-center space-x-1 ml-4"
+                    >
+                      <button
+                        @click="updateComment(comment)"
+                        class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-colors duration-200 group"
+                        title="Edit comment"
+                      >
+                        <PencilIcon
+                          class="h-4 w-4 group-hover:scale-110 transition-transform"
+                        />
+                      </button>
+                      <button
+                        @click="deleteComment(comment.uuid)"
+                        class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-colors duration-200 group"
+                        title="Delete comment"
+                      >
+                        <TrashIcon
+                          class="h-4 w-4 group-hover:scale-110 transition-transform"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
