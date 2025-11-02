@@ -110,11 +110,11 @@ def comment_replied_handler(sender, instance, created, **kwargs):
 
     channel.basic_publish(
         exchange=settings.RABBITMQ_EXCHANGE,
-        routing_key=settings.RABBITMQ_ROUTING_KEY,
+        routing_key='reply',
         body=message
     )
     print(f"[x] Sent '{message}'")
-    print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, settings.RABBITMQ_ROUTING_KEY)
+    print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, 'reply')
     connection.close()
 
 

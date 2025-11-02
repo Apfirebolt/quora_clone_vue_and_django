@@ -80,4 +80,9 @@ urlpatterns = [
         apiViews.RetrieveUpdateDestroyTagApiView.as_view(),
         name="tag-detail",
     ),
+    path(
+        "notifications",
+        apiViews.ListNotificationsApiView.as_view(),
+        name="notifications",
+    ),
 ]

@@ -27,9 +27,10 @@ from api.serializers import (
     ProfileSerializer,
     UserDetailSerializer,
     CommentSerializer,
-    TagSerializer
+    TagSerializer,
+    NotificationSerializer
 )
-from core.models import Answer, Question, Comment, Tag
+from core.models import Answer, Question, Comment, Tag, Notification
 from accounts.models import CustomUser
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -350,3 +351,12 @@ class RetrieveUpdateDestroyTagApiView(RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
     permission_classes = [IsAuthenticated]
     lookup_field = "pk"
+
+
+class ListNotificationsApiView(ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Notification.objects.filter(recipient=user).order_by("-created_at")

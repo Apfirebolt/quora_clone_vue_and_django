@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from accounts.models import CustomUser
-from core.models import Answer, Question, Comment, Tag
+from core.models import Answer, Question, Comment, Tag, Notification
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -164,5 +164,17 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    recipient = serializers.StringRelatedField()
+    created_at = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = "__all__"
+
+    def get_created_at(self, instance):
+        return instance.created_at.strftime("%B %d, %Y %H:%M")
     
 

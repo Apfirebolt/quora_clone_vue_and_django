@@ -28,7 +28,6 @@ def answer_callback(ch, method, properties, body):
         # 2. Check if the question author and answer author are different
         if answer_author_id != question_author_id:
             try:
-                # Fetch the recipient (Question Author) and Answer Author
                 recipient = User.objects.get(id=question_author_id)
                 answer_author = User.objects.get(id=answer_author_id)
 
@@ -79,7 +78,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Starting RabbitMQ Consumer..."))
 
         try:
-            # Establish connection
             connection = pika.BlockingConnection(
                 pika.ConnectionParameters(
                     host=settings.RABBITMQ_HOST,
@@ -107,7 +105,7 @@ class Command(BaseCommand):
                 f" [*] Waiting for messages on queue: {queue_name}. To exit press CTRL+C"
             )
 
-            # 3. Start consuming messages using the defined callback
+            # 3. Start consuming
             channel.basic_consume(
                 queue=queue_name,
                 on_message_callback=answer_callback,
