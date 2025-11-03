@@ -8,8 +8,8 @@ from core.models import Notification
 
 User = get_user_model()
 EXCHANGE_NAME = settings.RABBITMQ_EXCHANGE
-ROUTING_KEY = "answer.created"
-
+ANSWER_QUEUE = settings.RABBITMQ_ANSWER_QUEUE
+COMMENT_QUEUE = settings.RABBITMQ_COMMENT_QUEUE
 
 def answer_callback(ch, method, properties, body):
     """
@@ -20,10 +20,13 @@ def answer_callback(ch, method, properties, body):
         # 1. Parse the incoming message
         message_data = json.loads(body)
 
+        answer_id = message_data.get("answer_id")
+        question_id = message_data.get("question_id")
         answer_author_id = message_data.get("answer_author_id")
         question_author_id = message_data.get("question_author_id")
         question_content = message_data.get("question_content")
         answer_content = message_data.get("answer_content")
+        timestamp = message_data.get("timestamp")
 
         # 2. Check if the question author and answer author are different
         if answer_author_id != question_author_id:
@@ -39,7 +42,9 @@ def answer_callback(ch, method, properties, body):
 
                 # 3. Create the Notification record
                 Notification.objects.create(
-                    recipient=recipient, message=message, category="NEW_ANSWER"
+                    recipient=recipient, 
+                    message=message, 
+                    category="NEW_ANSWER"
                 )
                 print(f" [x] Notification created for {recipient.username}")
 
@@ -90,15 +95,15 @@ class Command(BaseCommand):
             )
             channel = connection.channel()
 
-            channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic")
+            channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic", durable=True)
 
             result = channel.queue_declare(
-                queue=settings.RABBITMQ_QUEUE, durable=True
+                queue=ANSWER_QUEUE, durable=True
             )
             queue_name = result.method.queue
 
             channel.queue_bind(
-                exchange=EXCHANGE_NAME, queue=queue_name, routing_key=ROUTING_KEY
+                exchange=EXCHANGE_NAME, queue=queue_name, routing_key=settings.RABBITMQ_ANSWER_ROUTING_KEY
             )
 
             self.stdout.write(

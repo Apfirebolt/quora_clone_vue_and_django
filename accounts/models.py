@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from core.models import Notification
+from django.db.models.signals import post_save, m2m_changed
+from django.dispatch import receiver
 
 
 class CustomUserManager(BaseUserManager):
@@ -45,5 +47,45 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         '''Doc string for meta'''
         verbose_name_plural = "User"
+
+
+@receiver(m2m_changed, sender=CustomUser.following.through)
+def create_follow_notification(sender, instance, action, pk_set, **kwargs):
+    # 'instance' is the user who initiated the follow
+    # 'pk_set' contains the primary keys of the users who are being followed
+    
+    if action == "post_add":
+        follower = instance
+        
+        for followed_user_pk in pk_set:
+            try:
+                # Retrieve the CustomUser object for the followed user
+                followed_user = CustomUser.objects.get(pk=followed_user_pk)
+                
+                Notification.objects.create(
+                    recipient=followed_user,
+                    message=f"{follower.username or follower.email} started following you",
+                    category='follow'
+                )
+            except CustomUser.DoesNotExist:
+                pass
+
+    
+    if action == "post_remove":
+        follower = instance
+        
+        for unfollowed_user_pk in pk_set:
+            try:
+                # Retrieve the CustomUser object for the unfollowed user
+                unfollowed_user = CustomUser.objects.get(pk=unfollowed_user_pk)
+                
+                Notification.objects.create(
+                    recipient=unfollowed_user,
+                    message=f"{follower.username or follower.email} stopped following you",
+                    category='unfollow'
+                )
+            except CustomUser.DoesNotExist:
+                pass
+
 
 

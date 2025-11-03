@@ -7,7 +7,65 @@
         subtitle="Get the latest questions from people and topics you follow. Stay informed and engaged through sharing your opinions."
       />
       <div>
-        
+        <div
+          v-if="
+            notifications &&
+            notifications.results &&
+            notifications.results.length > 0
+          "
+          class="mb-4"
+        >
+          <button
+            @click="toggleNotifications"
+            class="flex items-center justify-between w-full p-3 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors"
+          >
+            <span class="font-medium text-blue-800">
+              Notifications ({{ notifications.results.length }})
+            </span>
+            <svg
+              :class="{ 'transform rotate-180': isNotificationsOpen }"
+              class="w-5 h-5 text-blue-600 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          <transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 max-h-0"
+            enter-to-class="opacity-100 max-h-96"
+            leave-active-class="transition-all duration-300 ease-out"
+            leave-from-class="opacity-100 max-h-96"
+            leave-to-class="opacity-0 max-h-0"
+          >
+            <div v-show="isNotificationsOpen" class="overflow-hidden">
+              <div class="mt-2 p-3 bg-gray-50 rounded-lg border">
+                <ul class="space-y-2">
+                  <li
+                    v-for="notification in notifications.results"
+                    :key="notification.id"
+                    class="py-3 px-2 bg-white rounded border-l-4 border-primary shadow-sm"
+                  >
+                    <div class="text-primary">
+                      {{ notification.message || notification.content }}
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                      {{ notification.created_at || notification.timestamp }}
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </transition>
+        </div>
         <div class="flex items-center space-x-4 mt-3">
           <button
             @click="openModal"
@@ -138,6 +196,7 @@ import ConfirmModal from "../components/Confirm.vue";
 import QuestionCard from "../components/QuestionCard.vue";
 import SectionHeader from "../components/SectionHeader.vue";
 import { useQuestion } from "../store/question";
+import { useNotification } from "../store/notification";
 import { useAuth } from "../store/auth";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";
 import {
@@ -150,9 +209,11 @@ import {
 const isOpen = ref(false);
 const isConfirmModalOpen = ref(false);
 const questionStore = useQuestion();
+const notificationStore = useNotification();
 const authStore = useAuth();
 const selectedQuestion = ref(null);
 const confirmMessage = ref("");
+const isNotificationsOpen = ref(false);
 const searchText = ref("");
 const router = useRouter();
 let timeoutId;
@@ -175,6 +236,7 @@ const searchQuestionUtil = () => {
 };
 
 const questions = computed(() => questionStore.getQuestions);
+const notifications = computed(() => notificationStore.getNotifications);
 
 function closeModal() {
   isOpen.value = false;
@@ -191,6 +253,10 @@ function closeConfirmModal() {
 function openConfirmModal() {
   isConfirmModalOpen.value = true;
 }
+
+const toggleNotifications = () => {
+  isNotificationsOpen.value = !isNotificationsOpen.value;
+};
 
 const addQuestion = async (content, description) => {
   await questionStore.addQuestion(content, description);
@@ -234,5 +300,6 @@ const isQuestionOwner = computed(() => {
 
 onMounted(() => {
   questionStore.getQuestionsAction();
+  notificationStore.getNotificationsAction();
 });
 </script>

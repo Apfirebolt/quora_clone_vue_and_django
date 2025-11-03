@@ -172,9 +172,11 @@ RABBITMQ_PORT = 5672
 RABBITMQ_USER = 'guest'
 RABBITMQ_PASSWORD = 'guest'
 RABBITMQ_VHOST = '/'
-RABBITMQ_EXCHANGE = 'comment_exchange'
-RABBITMQ_ROUTING_KEY = 'comment.replied'
-RABBITMQ_QUEUE = 'answer_notification_queue'
+RABBITMQ_EXCHANGE = 'notifications_exchange'
+RABBITMQ_ANSWER_QUEUE = 'answer_notification_queue'
+RABBITMQ_ANSWER_ROUTING_KEY = 'question.replies'
+RABBITMQ_COMMENT_QUEUE = 'comment_queue'
+RABBITMQ_COMMENT_ROUTING_KEY = 'answer.replies'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

@@ -97,11 +97,12 @@ def comment_replied_handler(sender, instance, created, **kwargs):
     )
     channel = connection.channel()
 
-    channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic')
+    channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic', durable=True)
 
     message_data = {
         'comment_id': instance.id,
-        'user_id': instance.author.id,  
+        'user_id': instance.author.id,
+        'answer_user_id': instance.answer.author.id,
         'content': instance.body[:100], 
         'timestamp': str(instance.created_at)
         # Add any other relevant information
@@ -110,7 +111,7 @@ def comment_replied_handler(sender, instance, created, **kwargs):
 
     channel.basic_publish(
         exchange=settings.RABBITMQ_EXCHANGE,
-        routing_key='reply',
+        routing_key=settings.RABBITMQ_COMMENT_ROUTING_KEY,
         body=message
     )
     print(f"[x] Sent '{message}'")
@@ -131,7 +132,7 @@ def answer_notification_handler(sender, instance, created, **kwargs):
         )
         channel = connection.channel()
 
-        channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic')
+        channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic', durable=True)
 
         message_data = {
             'answer_id': instance.id,
@@ -146,7 +147,7 @@ def answer_notification_handler(sender, instance, created, **kwargs):
 
         channel.basic_publish(
             exchange=settings.RABBITMQ_EXCHANGE,
-            routing_key=settings.RABBITMQ_ROUTING_KEY,
+            routing_key=settings.RABBITMQ_ANSWER_ROUTING_KEY,
             body=message
         )
 
