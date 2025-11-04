@@ -13,6 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.utils.text import slugify
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -33,6 +35,10 @@ from api.serializers import (
 from core.models import Answer, Question, Comment, Tag, Notification
 from accounts.models import CustomUser
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.cache import cache
+from django.conf import settings
+
+QUESTION_LIST_CACHE_KEY = 'question_list'
 
 
 class CreateCustomUserApiView(CreateAPIView):
@@ -154,9 +160,21 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
     search_fields = ['content', 'author__email']
 
     def perform_create(self, serializer):
+        
         serializer.save(
             author=self.request.user, slug=slugify(serializer.validated_data["content"])
         )
+
+        # 1. Get the global KEY_PREFIX from settings (quora_clone)
+        global_prefix = settings.CACHES['default']['OPTIONS'].get('KEY_PREFIX', '')
+        
+        pattern = f"{global_prefix}:{QUESTION_LIST_CACHE_KEY}:*"
+        
+        cache.delete_pattern(pattern)
+
+    @method_decorator(cache_page(60 * 10, key_prefix=QUESTION_LIST_CACHE_KEY))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):

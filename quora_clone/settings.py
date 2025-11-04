@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
+    'django_redis',
 
     'accounts',
     'core',
@@ -190,6 +191,21 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Redis cache
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "KEY_PREFIX": "quora_clone"
+        }
+    }
+}
+
+CACHE_TTL = 300
 
 
 # Static files (CSS, JavaScript, Images)

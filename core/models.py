@@ -153,5 +153,3 @@ def answer_notification_handler(sender, instance, created, **kwargs):
 
         print(f"[x] Sent answer notification: '{message}'")
         connection.close()
-
-

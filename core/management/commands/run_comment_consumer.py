@@ -17,7 +17,6 @@ def comment_callback(ch, method, properties, body):
     Creates a Notification if the answer is for another user's question.
     """
     try:
-        # 1. Parse the incoming message
         message_data = json.loads(body)
 
         user_id = message_data.get("user_id")
@@ -27,24 +26,21 @@ def comment_callback(ch, method, properties, body):
         # Check if the message is already processed (though usually managed by broker, good for idempotency)
         if user_id == answer_user_id:
             print(" [x] Commented on own answer. No notification created.")
-            # Acknowledge and discard message as no further action is needed
+            # Acknowledge and discard
             ch.basic_ack(delivery_tag=method.delivery_tag) 
             return
 
         # Use transaction.atomic to ensure the DB operation is successful before ack
         with transaction.atomic():
             
-            # 2. Check if the comment author and answer author are different
             recipient = User.objects.get(id=answer_user_id)
             comment_author = User.objects.get(id=user_id)
 
-            # Construct the notification message
             message = (
                 f"**{comment_author.username or comment_author.email}** commented on your answer: "
                 f"**'{content[:50].strip()}...'**"
             )
 
-            # 3. Create the Notification record
             Notification.objects.create(
                 recipient=recipient, message=message, category="NEW_COMMENT"
             )
