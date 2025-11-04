@@ -6,15 +6,15 @@
       </h2>
     </div>
 
-    <form class="p-6 space-y-6" @submit="handleSubmit">
+    <form class="p-6 space-y-6" @submit="onSubmit">
       <div
-        v-if="errors.length > 0"
+        v-if="Object.keys(errors).length > 0"
         class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md"
       >
         <div class="flex">
           <div class="flex-shrink-0">
             <svg
-              class="h-5 w-5 text-red-400"
+              class="h-5 w-5 text-danger"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -27,8 +27,8 @@
           </div>
           <div class="ml-3">
             <p
-              class="text-sm text-red-700"
-              v-for="error in errors"
+              class="text-sm text-danger"
+              v-for="error in Object.values(errors)"
               :key="error"
             >
               {{ error }}
@@ -52,7 +52,11 @@
             type="text"
             placeholder="Enter your question..."
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-700 placeholder-gray-400 shadow-sm"
+            :class="{ 'border-danger': errors.content }"
           />
+          <p v-if="errors.content" class="mt-1 text-sm text-danger">
+            {{ errors.content }}
+          </p>
         </div>
       </div>
 
@@ -71,10 +75,14 @@
             rows="6"
             placeholder="Provide more details about your question..."
             class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-700 placeholder-gray-400 shadow-sm"
+            :class="{ 'border-red-500': errors.description }"
           ></textarea>
           <div class="absolute bottom-3 right-3 text-xs text-gray-400">
-            {{ description.length }} characters
+            {{ description?.length }} characters
           </div>
+          <p v-if="errors.description" class="mt-1 text-sm text-danger">
+            {{ errors.description }}
+          </p>
         </div>
       </div>
 
@@ -130,6 +138,9 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useForm } from "vee-validate";
+import * as yup from "yup";
+
 const props = defineProps({
   closeModal: {
     type: Function,
@@ -150,41 +161,40 @@ const props = defineProps({
   },
 });
 
-const content = ref("");
-const description = ref("");
-const errors = ref([]);
-const { closeModal, addQuestion } = props;
+const validationSchema = yup.object({
+  content: yup
+    .string()
+    .required("Question is required")
+    .min(10, "Question must be at least 10 characters long"),
+  description: yup.string().required("Description is required")
+    .required("Description is required")
+    .min(20, "Description must be at least 20 characters long"),
+});
 
-function handleSubmit(e) {
-  e.preventDefault();
-  errors.value = [];
-  if (!content.value) {
-    errors.value.push("Question is required");
-  }
-  if (!description.value) {
-    errors.value.push("Description is required");
-  }
-  if (errors.value.length > 0) {
-    return;
+const { errors, handleSubmit, defineField } = useForm({
+  validationSchema,
+});
+
+const [content] = defineField("content");
+const [description] = defineField("description");
+
+const { closeModal, addQuestion } = props;
+const onSubmit = handleSubmit((values) => {
+  if (props.question) {
+    props.updateQuestion(values.content, values.description);
   } else {
-    console.log("Form submitted");
-    if (props.question) {
-      props.updateQuestion(content.value, description.value);
-    } else {
-      addQuestion({
-        content: content.value,
-        description: description.value,
-      });
-    }
-    closeModal();
+    addQuestion({
+      content: values.content,
+      description: values.description,
+    });
   }
-}
+  closeModal();
+});
 
 onMounted(() => {
   if (props.question) {
     content.value = props.question.content;
     description.value = props.question.description;
   }
-  console.log("Question Form mounted");
 });
 </script>
