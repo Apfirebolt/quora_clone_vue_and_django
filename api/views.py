@@ -168,8 +168,9 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
         # 1. Get the global KEY_PREFIX from settings (quora_clone)
         global_prefix = settings.CACHES['default']['OPTIONS'].get('KEY_PREFIX', '')
         
-        pattern = f"{global_prefix}:{QUESTION_LIST_CACHE_KEY}:*"
+        pattern = f"*{QUESTION_LIST_CACHE_KEY}*"
         
+        # Use the cache instance to delete matching patterns
         cache.delete_pattern(pattern)
 
     @method_decorator(cache_page(60 * 10, key_prefix=QUESTION_LIST_CACHE_KEY))
