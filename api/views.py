@@ -118,7 +118,7 @@ class CustomUserDocumentView(DocumentViewSet):
     }
     
     filter_fields = {
-        'email': 'email.raw',  # Use '.raw' for exact keyword filtering
+        'email': 'email.raw',
         'username': 'username.raw',
         'is_staff': 'is_staff',
         'is_superuser': 'is_superuser',
