@@ -20,13 +20,9 @@ def answer_callback(ch, method, properties, body):
         # 1. Parse the incoming message
         message_data = json.loads(body)
 
-        answer_id = message_data.get("answer_id")
-        question_id = message_data.get("question_id")
         answer_author_id = message_data.get("answer_author_id")
         question_author_id = message_data.get("question_author_id")
         question_content = message_data.get("question_content")
-        answer_content = message_data.get("answer_content")
-        timestamp = message_data.get("timestamp")
 
         # 2. Check if the question author and answer author are different
         if answer_author_id != question_author_id:
