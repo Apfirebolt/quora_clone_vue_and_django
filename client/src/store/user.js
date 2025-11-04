@@ -53,7 +53,8 @@ export const useUser = defineStore("user", {
           Authorization: `Bearer ${auth.authData.access}`,
         };
         this.loading = true;
-        const response = await httpClient.get(`users?search=${search}&page=${page}`, {
+        const url = search ? `user-search?search=${search}&page=${page}` : `user-search?page=${page}`;
+        const response = await httpClient.get(url, {
           headers,
         });
         if (response.status === 200) {

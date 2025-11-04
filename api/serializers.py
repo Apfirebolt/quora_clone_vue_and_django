@@ -1,8 +1,11 @@
 from rest_framework import serializers
+from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from accounts.models import CustomUser
+from accounts.documents import CustomUserDocument
 from core.models import Answer, Question, Comment, Tag, Notification
+
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -50,6 +53,22 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
+
+class CustomUserDocumentSerializer(DocumentSerializer):
+    class Meta:
+        document = CustomUserDocument
+        fields = (
+            'id', 
+            'email', 
+            'username', 
+            'firstName', 
+            'lastName',
+            'is_staff',
+            'is_superuser'
+        )
+        # Optional: Specify read-only fields if necessary
+        read_only_fields = fields
     
 
 class ProfileSerializer(serializers.ModelSerializer):
