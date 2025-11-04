@@ -13,6 +13,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import (
+    FilteringFilterBackend,
+    OrderingFilterBackend,
+    SearchFilterBackend, # The key for full-text search
+)
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.text import slugify
@@ -30,10 +36,12 @@ from api.serializers import (
     UserDetailSerializer,
     CommentSerializer,
     TagSerializer,
-    NotificationSerializer
+    NotificationSerializer,
+    CustomUserDocumentSerializer
 )
 from core.models import Answer, Question, Comment, Tag, Notification
 from accounts.models import CustomUser
+from accounts.documents import CustomUserDocument
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.cache import cache
 from django.conf import settings
@@ -86,6 +94,43 @@ class UserDetailApiView(RetrieveAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
     lookup_field = "username"
+
+
+class CustomUserDocumentView(DocumentViewSet):
+    """View for the CustomUser document."""
+    
+    document = CustomUserDocument
+    serializer_class = CustomUserDocumentSerializer
+    permission_classes = []
+    
+    # Define the filter backends to use
+    filter_backends = [
+        FilteringFilterBackend,
+        OrderingFilterBackend,
+        SearchFilterBackend, 
+    ]
+
+    search_fields = {
+        'username': {'fuzziness': 'AUTO'},
+        'email': {'fuzziness': 'AUTO'},
+        'firstName': None,
+        'lastName': None,
+    }
+    
+    filter_fields = {
+        'email': 'email.raw',  # Use '.raw' for exact keyword filtering
+        'username': 'username.raw',
+        'is_staff': 'is_staff',
+        'is_superuser': 'is_superuser',
+    }
+    
+    ordering_fields = {
+        'id': 'id',
+        'email': 'email.raw',
+        'username': 'username.raw',
+    }
+    # Default ordering
+    ordering = ('id',)
 
 
 class FollowUserApiView(APIView):

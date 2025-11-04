@@ -1,6 +1,14 @@
 from django.urls import path
-
+from rest_framework.routers import SimpleRouter
+from django.urls import include
 from api import views as apiViews
+
+router = SimpleRouter()
+router.register(
+    r'user-search', 
+    apiViews.CustomUserDocumentView, 
+    basename='user-search-document'
+)
 
 
 urlpatterns = [
@@ -85,4 +93,6 @@ urlpatterns = [
         apiViews.ListNotificationsApiView.as_view(),
         name="notifications",
     ),
+    # include elastic search router urls
+    path('', include(router.urls)),
 ]
