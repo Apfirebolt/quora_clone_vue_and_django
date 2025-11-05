@@ -189,6 +189,7 @@ function closeModal() {
 
 function openModal() {
   isOpen.value = true;
+  selectedQuestion.value = null;
 }
 
 function closeConfirmModal() {
@@ -224,7 +225,7 @@ const deleteQuestionUtil = async () => {
 
 const updateQuestion = (question) => {
   selectedQuestion.value = question;
-  openModal();
+  isOpen.value = true;
 };
 
 const updateQuestionUtil = async (content, description) => {

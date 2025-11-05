@@ -69,8 +69,55 @@
               >
                 <span class="sr-only">Open user menu</span>
                 <span v-if="authData" class="text-white px-2 py-1 m-1">
-                  Hello, {{ authData.username ? authData.username : authData.email }}
+                  Hello,
+                  {{ authData.username ? authData.username : authData.email }}
                 </span>
+                <transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <MenuItems
+                    class="origin-top-right absolute right-0 mt-10 w-64 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  >
+                    <MenuItem v-slot="{ active }">
+                      <router-link
+                        :to="{ name: 'Profile' }"
+                        :class="[
+                          active ? 'bg-gray-100' : '',
+                          'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                        ]"
+                      >
+                        Your Profile
+                      </router-link>
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <router-link
+                        :to="{ name: 'Dashboard' }"
+                        :class="[
+                          active ? 'bg-gray-100' : '',
+                          'block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                        ]"
+                      >
+                        Dashboard
+                      </router-link>
+                    </MenuItem>
+                    <MenuItem v-slot="{ active }">
+                      <button
+                        @click="logOutUtil"
+                        :class="[
+                          active ? 'bg-gray-100' : '',
+                          'block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                        ]"
+                      >
+                        Sign out
+                      </button>
+                    </MenuItem>
+                  </MenuItems>
+                </transition>
               </MenuButton>
             </div>
           </Menu>
@@ -108,7 +155,8 @@
           :aria-current="isCurrentRoute(item.name) ? 'page' : undefined"
           >{{ item.name }}</router-link
         >
-        <button v-if="authData"
+        <button
+          v-if="authData"
           @click="logOutUtil"
           class="text-gray-500 w-full hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md font-medium"
         >
@@ -123,7 +171,7 @@
 import { computed, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuth } from "../store/auth";
-import logo from '../assets/1.png';
+import logo from "../assets/1.png";
 import {
   Disclosure,
   DisclosureButton,
