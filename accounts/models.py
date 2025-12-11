@@ -28,8 +28,8 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField("Email", unique=True, max_length=255)
-    username = models.CharField("User Name", unique=True, max_length=255, blank=True, null=True)
+    email = models.EmailField("Email", unique=True, max_length=255, db_index=True)
+    username = models.CharField("User Name", unique=True, max_length=255, blank=True, null=True, db_index=True)
     firstName = models.CharField("First Name", max_length=100, blank=True, null=True)
     lastName = models.CharField("Last Name", max_length=100, blank=True, null=True)
     profilePicture = models.ImageField("Profile Picture", upload_to='profile_pictures/', blank=True, null=True)
@@ -47,6 +47,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         '''Doc string for meta'''
         verbose_name_plural = "User"
+        indexes = [
+            models.Index(fields=['email', 'username']),
+        ]
 
 
 @receiver(m2m_changed, sender=CustomUser.following.through)

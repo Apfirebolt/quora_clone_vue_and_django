@@ -17,12 +17,12 @@ class TimeStampedModel(models.Model):
 
 
 class Question(TimeStampedModel):
-    uuid = models.UUIDField(default=uuid_lib.uuid4, editable=False)
+    uuid = models.UUIDField(db_index=True, default=uuid_lib.uuid4, editable=False)
     content = models.CharField(max_length=240)
     description = models.TextField(null=True, blank=True)
-    slug = models.SlugField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="questions"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="questions", db_index=True
     )
     upvotes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="upvoted_questions", blank=True
@@ -55,12 +55,12 @@ class Answer(TimeStampedModel):
     
 
 class Comment(TimeStampedModel):
-    uuid = models.UUIDField(default=uuid_lib.uuid4, editable=False)
+    uuid = models.UUIDField(db_index=True, default=uuid_lib.uuid4, editable=False)
     body = models.TextField()
     answer = models.ForeignKey(
-        Answer, on_delete=models.CASCADE, related_name="comments"
+        Answer, on_delete=models.CASCADE, related_name="comments", db_index=True
     )
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_index=True)
 
     def __str__(self):
         return self.author.username
@@ -75,11 +75,17 @@ class Tag(models.Model):
 
 class Notification(TimeStampedModel):
     recipient = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications", db_index=True
     )
     message = models.CharField(max_length=255)
-    category = models.CharField(max_length=50)
-    is_read = models.BooleanField(default=False)
+    category = models.CharField(max_length=50, db_index=True)
+    is_read = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['recipient', '-created_at']),
+            models.Index(fields=['recipient', 'is_read']),
+        ]
 
     def __str__(self):
         return f"Notification for {self.recipient.username} - {self.message} ({self.category})"
@@ -87,41 +93,53 @@ class Notification(TimeStampedModel):
 
 @receiver(post_save, sender=Comment)
 def comment_replied_handler(sender, instance, created, **kwargs):
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(
-            host=settings.RABBITMQ_HOST,
-            port=settings.RABBITMQ_PORT,
-            credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD),
-            virtual_host=settings.RABBITMQ_VHOST
+    if not created:
+        return
+    
+    connection = None
+    try:
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=settings.RABBITMQ_HOST,
+                port=settings.RABBITMQ_PORT,
+                credentials=pika.PlainCredentials(settings.RABBITMQ_USER, settings.RABBITMQ_PASSWORD),
+                virtual_host=settings.RABBITMQ_VHOST
+            )
         )
-    )
-    channel = connection.channel()
+        channel = connection.channel()
 
-    channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic', durable=True)
+        channel.exchange_declare(exchange=settings.RABBITMQ_EXCHANGE, exchange_type='topic', durable=True)
 
-    message_data = {
-        'comment_id': instance.id,
-        'user_id': instance.author.id,
-        'answer_user_id': instance.answer.author.id,
-        'content': instance.body[:100], 
-        'timestamp': str(instance.created_at)
-        # Add any other relevant information
-    }
-    message = json.dumps(message_data)
+        message_data = {
+            'comment_id': instance.id,
+            'user_id': instance.author.id,
+            'answer_user_id': instance.answer.author.id,
+            'content': instance.body[:100], 
+            'timestamp': str(instance.created_at)
+        }
+        message = json.dumps(message_data)
 
-    channel.basic_publish(
-        exchange=settings.RABBITMQ_EXCHANGE,
-        routing_key=settings.RABBITMQ_COMMENT_ROUTING_KEY,
-        body=message
-    )
-    print(f"[x] Sent '{message}'")
-    print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, 'reply')
-    connection.close()
+        channel.basic_publish(
+            exchange=settings.RABBITMQ_EXCHANGE,
+            routing_key=settings.RABBITMQ_COMMENT_ROUTING_KEY,
+            body=message
+        )
+        print(f"[x] Sent '{message}'")
+        print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, 'reply')
+    except Exception as e:
+        print(f"Error publishing comment notification: {e}")
+    finally:
+        if connection and connection.is_open:
+            connection.close()
 
 
 @receiver(post_save, sender=Answer)
 def answer_notification_handler(sender, instance, created, **kwargs):
-    if created:
+    if not created:
+        return
+    
+    connection = None
+    try:
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(
                 host=settings.RABBITMQ_HOST,
@@ -152,4 +170,8 @@ def answer_notification_handler(sender, instance, created, **kwargs):
         )
 
         print(f"[x] Sent answer notification: '{message}'")
-        connection.close()
+    except Exception as e:
+        print(f"Error publishing answer notification: {e}")
+    finally:
+        if connection and connection.is_open:
+            connection.close()
