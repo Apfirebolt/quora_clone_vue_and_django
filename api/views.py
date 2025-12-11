@@ -22,6 +22,7 @@ from django_elasticsearch_dsl_drf.filter_backends import (
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.text import slugify
+from django.db.models import Count, Prefetch
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -91,9 +92,16 @@ class ProfileView(APIView):
 
 class UserDetailApiView(RetrieveAPIView):
     serializer_class = UserDetailSerializer
-    queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
     lookup_field = "username"
+
+    def get_queryset(self):
+        return CustomUser.objects.prefetch_related(
+            'followers', 'following', 'questions', 'answer_set'
+        ).annotate(
+            questions_count=Count('questions'),
+            answers_count=Count('answer_set')
+        )
 
 
 class CustomUserDocumentView(DocumentViewSet):
@@ -197,12 +205,20 @@ class ChangeProfilePictureView(APIView):
 
 class ListCreateQuestionsApiView(ListCreateAPIView):
     serializer_class = QuestionSerializer
-    queryset = Question.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['content', 'author__email']
     ordering_fields = ['created_at', 'updated_at']
     search_fields = ['content', 'author__email']
+
+    def get_queryset(self):
+        # Optimize queries with select_related and prefetch_related
+        return Question.objects.select_related('author').prefetch_related(
+            'upvotes', 'downvotes', 'tags',
+            Prefetch('answers', queryset=Answer.objects.select_related('author', 'question').prefetch_related(
+                'upvotes', 'downvotes', 'comments'
+            ))
+        ).annotate(answers_count=Count('answers'))
 
     def perform_create(self, serializer):
         
@@ -225,9 +241,18 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
 
 class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = QuestionSerializer
-    queryset = Question.objects.all()
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     lookup_field = "slug"
+
+    def get_queryset(self):
+        # Optimize queries with select_related and prefetch_related
+        return Question.objects.select_related('author').prefetch_related(
+            'upvotes', 'downvotes', 'tags',
+            Prefetch('answers', queryset=Answer.objects.select_related('author', 'question').prefetch_related(
+                'upvotes', 'downvotes', 
+                Prefetch('comments', queryset=Comment.objects.select_related('author'))
+            ))
+        ).annotate(answers_count=Count('answers'))
 
     def delete(self, request, slug):
         question = get_object_or_404(Question, slug=slug)
@@ -251,7 +276,10 @@ class MyQuestionsListAPIView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Question.objects.filter(author=user).order_by("-created_at")
+        return Question.objects.filter(author=user).select_related('author').prefetch_related(
+            'upvotes', 'downvotes', 'tags',
+            Prefetch('answers', queryset=Answer.objects.select_related('author').prefetch_related('upvotes', 'downvotes'))
+        ).annotate(answers_count=Count('answers')).order_by("-created_at")
 
 
 class QuestionLikeAPIView(APIView):
@@ -325,7 +353,10 @@ class MyAnswersListAPIView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Answer.objects.filter(author=user).order_by("-created_at")
+        return Answer.objects.filter(author=user).select_related('author', 'question').prefetch_related(
+            'upvotes', 'downvotes',
+            Prefetch('comments', queryset=Comment.objects.select_related('author'))
+        ).annotate(comments_count=Count('comments')).order_by("-created_at")
     
 
 class AnswerListAPIView(ListAPIView):
@@ -336,7 +367,10 @@ class AnswerListAPIView(ListAPIView):
 
     def get_queryset(self):
         kwarg_slug = self.kwargs.get("slug")
-        return Answer.objects.filter(question__slug=kwarg_slug).order_by("-created_at")
+        return Answer.objects.filter(question__slug=kwarg_slug).select_related('author', 'question').prefetch_related(
+            'upvotes', 'downvotes',
+            Prefetch('comments', queryset=Comment.objects.select_related('author'))
+        ).annotate(comments_count=Count('comments')).order_by("-created_at")
 
 
 class AnswerLikeAPIView(APIView):
@@ -423,4 +457,4 @@ class ListNotificationsApiView(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Notification.objects.filter(recipient=user).order_by("-created_at")
+        return Notification.objects.filter(recipient=user).select_related('recipient').order_by("-created_at")

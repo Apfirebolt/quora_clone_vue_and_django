@@ -47,6 +47,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         '''Doc string for meta'''
         verbose_name_plural = "User"
+        indexes = [
+            models.Index(fields=['email', 'username']),
+        ]
 
 
 @receiver(m2m_changed, sender=CustomUser.following.through)

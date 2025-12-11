@@ -83,18 +83,29 @@ class UserDetailSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField()
     followers = serializers.StringRelatedField(many=True, read_only=True)
     following = serializers.StringRelatedField(many=True, read_only=True)
+    questions_count = serializers.SerializerMethodField()
+    answers_count = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers', 'followers', 'following', 'profilePicture',)
+        fields = ('username', 'email', 'id', 'firstName', 'lastName', 'questions', 'answers', 
+                  'followers', 'following', 'profilePicture', 'questions_count', 'answers_count')
 
     def get_questions(self, instance):
-        questions = Question.objects.filter(author=instance)
+        # Use prefetch_related and select_related to avoid N+1 queries
+        questions = instance.questions.all()
         return QuestionSerializer(questions, many=True).data
     
     def get_answers(self, instance):
-        answers = Answer.objects.filter(author=instance)
+        # Use prefetch_related and select_related to avoid N+1 queries
+        answers = instance.answer_set.all()
         return AnswerSerializer(answers, many=True).data
+    
+    def get_questions_count(self, instance):
+        return getattr(instance, 'questions_count', instance.questions.count())
+    
+    def get_answers_count(self, instance):
+        return getattr(instance, 'answers_count', instance.answer_set.count())
     
 
 class ListUserSerializer(serializers.ModelSerializer):
@@ -113,6 +124,8 @@ class AnswerSerializer(serializers.ModelSerializer):
     downvoted_by = serializers.StringRelatedField(many=True, read_only=True)
     upvoted_users = serializers.SerializerMethodField()
     downvoted_users = serializers.SerializerMethodField()
+    # Uses annotation for efficiency when available, otherwise performs count query
+    comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Answer
@@ -125,14 +138,19 @@ class AnswerSerializer(serializers.ModelSerializer):
         return instance.question.slug
     
     def get_comments(self, instance):
-        comments = Comment.objects.filter(answer=instance)
+        # Use prefetch_related to avoid N+1 queries
+        comments = instance.comments.all()
         return CommentSerializer(comments, many=True).data
     
+    def get_comments_count(self, instance):
+        # Use annotation to avoid additional query
+        return getattr(instance, 'comments_count', instance.comments.count())
+    
     def get_upvoted_users(self, instance):
-        return instance.upvotes.all().values_list('username', flat=True)
+        return list(instance.upvotes.all().values_list('username', flat=True))
     
     def get_downvoted_users(self, instance):
-        return instance.downvotes.all().values_list('username', flat=True)
+        return list(instance.downvotes.all().values_list('username', flat=True))
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -140,7 +158,8 @@ class QuestionSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     slug = serializers.SlugField(read_only=True)
     answers_count = serializers.SerializerMethodField()
-    answers = AnswerSerializer(many=True, read_only=True)
+    # Uses SerializerMethodField to leverage prefetch_related optimization
+    answers = serializers.SerializerMethodField()
     upvoted_users = serializers.SerializerMethodField()
     downvoted_users = serializers.SerializerMethodField()
 
@@ -152,16 +171,18 @@ class QuestionSerializer(serializers.ModelSerializer):
         return instance.created_at.strftime("%B %d, %Y")
 
     def get_answers_count(self, instance):
-        return instance.answers.count()
+        # Use annotation to avoid additional query
+        return getattr(instance, 'answers_count', instance.answers.count())
     
     def get_answers(self, instance):
+        # Use prefetch_related to avoid N+1 queries
         return AnswerSerializer(instance.answers.all(), many=True).data
     
     def get_upvoted_users(self, instance):
-        return instance.upvotes.all().values_list('username', flat=True)
+        return list(instance.upvotes.all().values_list('username', flat=True))
     
     def get_downvoted_users(self, instance):
-        return instance.downvotes.all().values_list('username', flat=True)
+        return list(instance.downvotes.all().values_list('username', flat=True))
     
     
 
