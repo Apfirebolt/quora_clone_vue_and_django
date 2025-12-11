@@ -124,7 +124,7 @@ class AnswerSerializer(serializers.ModelSerializer):
     downvoted_by = serializers.StringRelatedField(many=True, read_only=True)
     upvoted_users = serializers.SerializerMethodField()
     downvoted_users = serializers.SerializerMethodField()
-    # Note: comments_count is included via SerializerMethodField when annotation is present
+    # Uses annotation for efficiency when available, otherwise performs count query
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -158,7 +158,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     created_at = serializers.SerializerMethodField()
     slug = serializers.SlugField(read_only=True)
     answers_count = serializers.SerializerMethodField()
-    # Note: answers field is populated via SerializerMethodField to avoid circular dependency
+    # Uses SerializerMethodField to leverage prefetch_related optimization
     answers = serializers.SerializerMethodField()
     upvoted_users = serializers.SerializerMethodField()
     downvoted_users = serializers.SerializerMethodField()

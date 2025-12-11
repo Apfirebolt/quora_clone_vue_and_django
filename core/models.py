@@ -124,8 +124,8 @@ def comment_replied_handler(sender, instance, created, **kwargs):
             routing_key=settings.RABBITMQ_COMMENT_ROUTING_KEY,
             body=message
         )
-        print(f"[x] Sent '{message}'")
-        print('Exchange and routing key used:', settings.RABBITMQ_EXCHANGE, 'reply')
+        print(f"[x] Sent comment notification: '{message}'")
+        print(f"Exchange and routing key used: {settings.RABBITMQ_EXCHANGE}, {settings.RABBITMQ_COMMENT_ROUTING_KEY}")
     except Exception as e:
         print(f"Error publishing comment notification: {e}")
     finally:
