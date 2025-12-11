@@ -97,10 +97,9 @@ class UserDetailApiView(RetrieveAPIView):
 
     def get_queryset(self):
         return CustomUser.objects.prefetch_related(
-            'followers', 'following', 'questions', 'answer_set'
+            'followers', 'following', 'questions'
         ).annotate(
-            questions_count=Count('questions'),
-            answers_count=Count('answer_set')
+            questions_count=Count('questions')
         )
 
 
