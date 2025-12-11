@@ -20,9 +20,9 @@ class Question(TimeStampedModel):
     uuid = models.UUIDField(db_index=True, default=uuid_lib.uuid4, editable=False)
     content = models.CharField(max_length=240)
     description = models.TextField(null=True, blank=True)
-    slug = models.SlugField(max_length=255, unique=True, db_index=True)
+    slug = models.SlugField(max_length=255, unique=True)
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="questions", db_index=True
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="questions"
     )
     upvotes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="upvoted_questions", blank=True
@@ -58,9 +58,9 @@ class Comment(TimeStampedModel):
     uuid = models.UUIDField(db_index=True, default=uuid_lib.uuid4, editable=False)
     body = models.TextField()
     answer = models.ForeignKey(
-        Answer, on_delete=models.CASCADE, related_name="comments", db_index=True
+        Answer, on_delete=models.CASCADE, related_name="comments"
     )
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_index=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.author.username
@@ -75,7 +75,7 @@ class Tag(models.Model):
 
 class Notification(TimeStampedModel):
     recipient = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications", db_index=True
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications"
     )
     message = models.CharField(max_length=255)
     category = models.CharField(max_length=50, db_index=True)
