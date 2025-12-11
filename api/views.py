@@ -22,6 +22,7 @@ from django_elasticsearch_dsl_drf.filter_backends import (
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils.text import slugify
+from django.db.models import Count, Prefetch
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -95,7 +96,6 @@ class UserDetailApiView(RetrieveAPIView):
     lookup_field = "username"
 
     def get_queryset(self):
-        from django.db.models import Count
         return CustomUser.objects.prefetch_related(
             'followers', 'following', 'questions', 'answer_set'
         ).annotate(
@@ -213,7 +213,6 @@ class ListCreateQuestionsApiView(ListCreateAPIView):
 
     def get_queryset(self):
         # Optimize queries with select_related and prefetch_related
-        from django.db.models import Count, Prefetch
         return Question.objects.select_related('author').prefetch_related(
             'upvotes', 'downvotes', 'tags',
             Prefetch('answers', queryset=Answer.objects.select_related('author', 'question').prefetch_related(
@@ -247,7 +246,6 @@ class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         # Optimize queries with select_related and prefetch_related
-        from django.db.models import Count, Prefetch
         return Question.objects.select_related('author').prefetch_related(
             'upvotes', 'downvotes', 'tags',
             Prefetch('answers', queryset=Answer.objects.select_related('author', 'question').prefetch_related(
@@ -277,7 +275,6 @@ class MyQuestionsListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        from django.db.models import Count, Prefetch
         user = self.request.user
         return Question.objects.filter(author=user).select_related('author').prefetch_related(
             'upvotes', 'downvotes', 'tags',
@@ -355,7 +352,6 @@ class MyAnswersListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        from django.db.models import Count, Prefetch
         user = self.request.user
         return Answer.objects.filter(author=user).select_related('author', 'question').prefetch_related(
             'upvotes', 'downvotes',
@@ -370,7 +366,6 @@ class AnswerListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        from django.db.models import Count, Prefetch
         kwarg_slug = self.kwargs.get("slug")
         return Answer.objects.filter(question__slug=kwarg_slug).select_related('author', 'question').prefetch_related(
             'upvotes', 'downvotes',
