@@ -15,6 +15,7 @@ media
 
 # testing
 /coverage
+client/coverage
 
 # production
 /build
@@ -34,3 +35,8 @@ yarn-error.log*
 
 # Ignore virtual environment
 venv
+
+# test coverage reports
+htmlcov/
+.coverage
+.coverage.*

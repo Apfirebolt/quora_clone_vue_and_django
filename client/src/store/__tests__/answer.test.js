@@ -1,51 +1,100 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { setActivePinia, createPinia } from 'pinia'
+
+const toastSuccess = vi.fn()
+const toastError = vi.fn()
+const httpClientMock = {
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  delete: vi.fn(),
+}
+
+vi.mock('vue-toastification', () => ({
+  useToast: () => ({ success: toastSuccess, error: toastError }),
+}))
+
+vi.mock('@/store/auth', () => ({
+  useAuth: () => ({ authData: { access: 'fake-access' } }),
+}))
+
+vi.mock('@/plugins/interceptor', () => ({
+  default: httpClientMock,
+}))
+
+const { useAnswer } = await import('@/store/answer')
 
 describe('Answer Store', () => {
-  describe('initial state', () => {
-    it('should have correct initial state', () => {
-      expect(true).toBe(true)
-    })
+  let answerStore
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+    answerStore = useAnswer()
   })
 
-  describe('fetchAnswers', () => {
-    it('should fetch answers successfully', () => {
-      expect(true).toBe(true)
-    })
+  it('adds an answer successfully', async () => {
+    const payload = { body: 'Test answer' }
+    httpClientMock.post.mockResolvedValue({ status: 201 })
 
-    it('should handle fetch error', () => {
-      expect(true).toBe(true)
+    await answerStore.addAnswer('question-slug', payload)
+
+    expect(httpClientMock.post).toHaveBeenCalledWith('questions-new-answer/question-slug/', payload, {
+      headers: { Authorization: 'Bearer fake-access' },
     })
+    expect(toastSuccess).toHaveBeenCalledWith('Answer added!')
+    expect(answerStore.loading).toBe(false)
   })
 
-  describe('createAnswer', () => {
-    it('should create answer successfully', () => {
-      expect(true).toBe(true)
-    })
+  it('returns error when adding an answer fails', async () => {
+    const error = new Error('Add answer failed')
+    httpClientMock.post.mockRejectedValue(error)
 
-    it('should handle creation error', () => {
-      expect(true).toBe(true)
-    })
+    let result
+    try {
+      result = await answerStore.addAnswer('question-slug', { body: 'Test' })
+    } catch (catchError) {
+      result = catchError
+    }
+
+    expect(result).toBe(error)
+    expect(answerStore.loading).toBe(false)
   })
 
-  describe('updateAnswer', () => {
-    it('should update answer successfully', () => {
-      expect(true).toBe(true)
+  it('updates answer successfully', async () => {
+    const answerData = { uuid: 'abc-123', body: 'Updated answer' }
+    httpClientMock.put.mockResolvedValue({ status: 200 })
+
+    await answerStore.updateAnswer(answerData)
+
+    expect(httpClientMock.put).toHaveBeenCalledWith('answers/abc-123/', answerData, {
+      headers: { Authorization: 'Bearer fake-access' },
     })
+    expect(toastSuccess).toHaveBeenCalledWith('Answer updated!')
+    expect(answerStore.loading).toBe(false)
   })
 
-  describe('deleteAnswer', () => {
-    it('should delete answer successfully', () => {
-      expect(true).toBe(true)
+  it('fetches answers and stores page data', async () => {
+    const responseData = [{ uuid: '123' }]
+    httpClientMock.get.mockResolvedValue({ status: 200, data: responseData })
+
+    await answerStore.getAnswersAction(3)
+
+    expect(httpClientMock.get).toHaveBeenCalledWith('answers?page=3', {
+      headers: { Authorization: 'Bearer fake-access' },
     })
+    expect(answerStore.answerData).toEqual(responseData)
+    expect(answerStore.loading).toBe(false)
   })
 
-  describe('vote handling', () => {
-    it('should handle upvote', () => {
-      expect(true).toBe(true)
-    })
+  it('deletes an answer successfully', async () => {
+    httpClientMock.delete.mockResolvedValue({ status: 204 })
 
-    it('should handle downvote', () => {
-      expect(true).toBe(true)
+    await answerStore.deleteAnswer('answer-123')
+
+    expect(httpClientMock.delete).toHaveBeenCalledWith('answers/answer-123', {
+      headers: { Authorization: 'Bearer fake-access' },
     })
+    expect(toastSuccess).toHaveBeenCalledWith('Answer deleted!')
   })
 })
