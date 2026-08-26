@@ -8,13 +8,11 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import HeaderComponent from "./components/HeaderComponent.vue";
 import FooterComponent from "./components/FooterComponent.vue";
-import SwiperClass, { Pagination } from "swiper";
+import SwiperClass from "swiper";
 import VueAwesomeSwiper from "vue-awesome-swiper";
 import "swiper/css";
 import "swiper/css/pagination";
 import "aos/dist/aos.css";
-
-SwiperClass.use([Pagination]);
 
 const app = createApp(App);
 

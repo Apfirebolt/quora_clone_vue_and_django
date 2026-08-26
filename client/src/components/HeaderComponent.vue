@@ -39,7 +39,7 @@
                   :class="[
                     isCurrentRoute(item.name)
                       ? 'bg-neutral-800 text-white font-semibold shadow-xs'
-                      : 'hover:bg-neutral-800/60 hover:text-white font-medium',
+                      : 'text-neutral-300 hover:bg-neutral-800/60 hover:text-white font-medium',
                     'px-3.5 py-2 rounded-xl text-xs lg:text-sm transition-all duration-150',
                   ]"
                   :aria-current="isCurrentRoute(item.name) ? 'page' : undefined"

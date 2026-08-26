@@ -2,13 +2,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+@theme {
+  /* Fonts */
+  --font-inter: 'Inter', sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
+  --font-nunito: 'Nunito', sans-serif;
+
+  /* Theme Colors */
+  --color-primary: #8E1616;
+  --color-secondary: #D84040;
+  --color-accent: #EEEEEE;
+  --color-neutral: #1E3E62;
+  --color-base: #000B58;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --color-success: #10B981;
+}
 
 :root {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-nunito);
   line-height: 1.5;
   font-weight: 400;
 
@@ -27,6 +41,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -34,19 +49,7 @@ a:hover {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-  font-family: 'Inter', sans-serif;
-}
-
-.font-roboto {
-  font-family: 'Roboto', sans-serif;
-}
-
-.font-nunito {
-  font-family: 'Nunito', sans-serif;
-}
-
-.font-inter {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter);
 }
 
 .card {
@@ -66,7 +69,7 @@ h1 {
   }
 }
 
-/* Base Container & Typography */
+/* Base Toast Container & Typography */
 .Vue-Toastification__toast.custom-theme-toast {
   font-family: inherit;
   border-radius: 1rem;
@@ -74,46 +77,46 @@ h1 {
   box-shadow: 0 10px 25px -5px rgba(0, 11, 88, 0.2), 0 8px 10px -6px rgba(0, 11, 88, 0.15);
   border: 1px solid rgba(238, 238, 238, 0.15);
   backdrop-filter: blur(8px);
-  color: #EEEEEE;
+  color: var(--color-accent);
 }
 
 .custom-theme-toast-body {
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.35;
-  color: #EEEEEE;
+  color: var(--color-accent);
 }
 
 /* Default Toast: Base (#000B58) */
 .Vue-Toastification__toast--default.custom-theme-toast {
-  background-color: #000B58;
+  background-color: var(--color-base);
 }
 
 /* Info Toast: Neutral (#1E3E62) */
 .Vue-Toastification__toast--info.custom-theme-toast {
-  background-color: #1E3E62;
+  background-color: var(--color-neutral);
   border-color: rgba(30, 62, 98, 0.4);
 }
 
 /* Error Toast: Primary (#8E1616) */
 .Vue-Toastification__toast--error.custom-theme-toast {
-  background-color: #8E1616;
+  background-color: var(--color-primary);
   border-color: rgba(216, 64, 64, 0.3);
 }
 
-/* Warning Toast: Secondary (#D84040) / Amber */
+/* Warning Toast: Secondary (#D84040) */
 .Vue-Toastification__toast--warning.custom-theme-toast {
-  background-color: #D84040;
+  background-color: var(--color-secondary);
 }
 
-/* Success Toast: Emerald with Deep Contrast (#10B981) */
+/* Success Toast: Emerald (#10B981) */
 .Vue-Toastification__toast--success.custom-theme-toast {
-  background-color: #10B981;
+  background-color: var(--color-success);
 }
 
 /* Close Button Styling */
 .Vue-Toastification__close-button {
-  color: #EEEEEE;
+  color: var(--color-accent);
   opacity: 0.7;
   font-size: 1.1rem;
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -126,7 +129,7 @@ h1 {
 
 /* Progress Bar Overrides */
 .Vue-Toastification__progress-bar {
-  background-color: #EEEEEE;
+  background-color: var(--color-accent);
   opacity: 0.4;
   height: 3px;
   border-bottom-left-radius: 1rem;
