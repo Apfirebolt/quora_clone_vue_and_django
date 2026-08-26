@@ -207,6 +207,21 @@ CACHES = {
 
 CACHE_TTL = 300
 
+# Format: amqp://user:password@host:port/vhost
+CELERY_BROKER_URL = f"amqp://{RABBITMQ_USER}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}"
+
+# Recommended defaults
+CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_TASK_IGNORE_RESULT = True
+
+CELERY_BEAT_SCHEDULE = {
+    "drain-rabbitmq-notifications-every-30-seconds": {
+        "task": "core.tasks.consume_notification_queues_batch",
+        "schedule": 30.0,
+    },
+}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
