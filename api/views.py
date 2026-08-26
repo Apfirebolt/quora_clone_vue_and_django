@@ -9,6 +9,7 @@ from rest_framework.generics import (
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from core.utils import publish_login_event
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
@@ -60,6 +61,19 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     # Replace the serializer with your custom
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = []
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        # Serializer validated successfully -> Publish event to RabbitMQ
+        publish_login_event(serializer.validated_data)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class ListCustomUsersApiView(ListAPIView):
