@@ -1,143 +1,131 @@
 <template>
-  <div class="max-w-xxl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
-      <h2 class="text-xl font-semibold text-white text-center">
-        {{ props.question ? "Edit Question" : "Add Question" }}
-      </h2>
-    </div>
+  <div class="w-full font-inter">
+    <div class="relative overflow-hidden rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100">
+      
+      <!-- Subtle Brand Accent Ambient Glow -->
+      <div class="pointer-events-none absolute -top-16 right-0 h-44 w-44 rounded-full bg-blue-100/50 blur-3xl"></div>
 
-    <form class="p-6 space-y-6" @submit="onSubmit">
-      <div
-        v-if="Object.keys(errors).length > 0"
-        class="bg-red-50 border-l-4 border-red-400 p-4 rounded-md"
-      >
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg
-              class="h-5 w-5 text-danger"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clip-rule="evenodd"
-              />
+      <!-- Header & Close Button -->
+      <div class="relative flex items-center justify-between border-b border-slate-100 pb-5 mb-6">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <div class="ml-3">
-            <p
-              class="text-sm text-danger"
-              v-for="error in Object.values(errors)"
-              :key="error"
-            >
-              {{ error }}
+          <div>
+            <h2 class="text-xl font-bold tracking-tight text-slate-900">
+              {{ props.question ? "Edit Question" : "Ask a Question" }}
+            </h2>
+            <p class="text-xs text-slate-400">
+              Share details so the community can provide accurate answers
             </p>
           </div>
         </div>
+
+        <button
+          type="button"
+          @click="closeModal"
+          class="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
-      <div>
-        <label
-          for="content"
-          class="block text-sm font-semibold text-gray-700 mb-2"
+      <!-- Form Body -->
+      <form class="space-y-5" @submit.prevent="onSubmit">
+        
+        <!-- Summary Alert Error Block -->
+        <div
+          v-if="Object.keys(errors).length > 0"
+          class="flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-xs text-rose-800"
         >
-          Question Title
-        </label>
-        <div class="relative">
+          <svg class="h-5 w-5 shrink-0 text-rose-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <div class="space-y-1">
+            <p class="font-semibold">Please resolve the following issues:</p>
+            <ul class="list-disc pl-4 space-y-0.5">
+              <li v-for="error in Object.values(errors)" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Question Title Input -->
+        <div class="space-y-1.5">
+          <label for="content" class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+            Question Title <span class="text-rose-500">*</span>
+          </label>
           <input
             id="content"
             name="content"
             v-model="content"
             type="text"
-            placeholder="Enter your question..."
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-700 placeholder-gray-400 shadow-sm"
-            :class="{ 'border-danger': errors.content }"
+            placeholder="e.g. What are the best practices for state management in Vue 3?"
+            class="w-full rounded-xl border bg-slate-50/60 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 transition focus:bg-white focus:outline-none focus:ring-2"
+            :class="errors.content ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-primary focus:ring-primary/20'"
           />
-          <p v-if="errors.content" class="mt-1 text-sm text-danger">
+          <p v-if="errors.content" class="text-xs font-medium text-rose-600">
             {{ errors.content }}
           </p>
         </div>
-      </div>
 
-      <div>
-        <label
-          for="description"
-          class="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          Question Description
-        </label>
-        <div class="relative">
-          <textarea
-            id="description"
-            name="description"
-            v-model="description"
-            rows="6"
-            placeholder="Provide more details about your question..."
-            class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-700 placeholder-gray-400 shadow-sm"
-            :class="{ 'border-red-500': errors.description }"
-          ></textarea>
-          <div class="absolute bottom-3 right-3 text-xs text-gray-400">
-            {{ description?.length }} characters
+        <!-- Question Description Input -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label for="description" class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Details & Context <span class="text-rose-500">*</span>
+            </label>
+            <span class="text-[11px] font-medium text-slate-400">
+              {{ description?.length || 0 }} characters
+            </span>
           </div>
-          <p v-if="errors.description" class="mt-1 text-sm text-danger">
+          <div class="relative">
+            <textarea
+              id="description"
+              name="description"
+              v-model="description"
+              rows="5"
+              placeholder="Provide background information, what you've tried, or relevant context..."
+              class="w-full rounded-xl border bg-slate-50/60 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 transition resize-none focus:bg-white focus:outline-none focus:ring-2"
+              :class="errors.description ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : 'border-slate-200 focus:border-primary focus:ring-primary/20'"
+            ></textarea>
+          </div>
+          <p v-if="errors.description" class="text-xs font-medium text-rose-600">
             {{ errors.description }}
           </p>
         </div>
-      </div>
 
-      <div class="flex space-x-3 pt-4">
-        <button
-          type="submit"
-          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm"
-        >
-          <span class="flex items-center justify-center">
-            <svg
-              class="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              ></path>
-            </svg>
-            {{ props.question ? "Update Question" : "Post Question" }}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          @click="closeModal"
-          class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-        >
-          <span class="flex items-center justify-center">
-            <svg
-              class="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
+        <!-- Action Buttons -->
+        <div class="flex flex-col-reverse sm:flex-row gap-3 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            @click="closeModal"
+            class="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-300 active:scale-[0.98]"
+          >
             Cancel
-          </span>
-        </button>
-      </div>
-    </form>
+          </button>
+
+          <button
+            type="submit"
+            class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-accent shadow-sm transition hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{{ props.question ? "Save Changes" : "Publish Question" }}</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
 
@@ -164,9 +152,10 @@ const props = defineProps({
 const validationSchema = yup.object({
   content: yup
     .string()
-    .required("Question is required")
-    .min(10, "Question must be at least 10 characters long"),
-  description: yup.string().required("Description is required")
+    .required("Question title is required")
+    .min(10, "Title must be at least 10 characters long"),
+  description: yup
+    .string()
     .required("Description is required")
     .min(20, "Description must be at least 20 characters long"),
 });
@@ -179,14 +168,12 @@ const [content] = defineField("content");
 const [description] = defineField("description");
 
 const { closeModal, addQuestion } = props;
+
 const onSubmit = handleSubmit((values) => {
   if (props.question) {
     props.updateQuestion(values.content, values.description);
   } else {
-    addQuestion({
-      content: values.content,
-      description: values.description,
-    });
+    addQuestion(values.content, values.description);
   }
   closeModal();
 });
