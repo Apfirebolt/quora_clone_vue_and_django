@@ -1,5 +1,5 @@
 <template>
-  <Disclosure as="nav" class="sticky top-0 z-50 bg-neutral/95 backdrop-blur-md border-b border-neutral-800 font-inter text-primary" v-slot="{ open }">
+  <Disclosure as="nav" class="sticky top-0 z-50 bg-secondary backdrop-blur-md border-b border-neutral-800 font-inter text-primary" v-slot="{ open }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="relative flex items-center justify-between h-16">
         
@@ -112,7 +112,7 @@
                   <router-link
                     :to="{ name: 'Profile' }"
                     :class="[
-                      active ? 'bg-slate-100 text-slate-900' : 'text-slate-700',
+                      active ? 'bg-slate-100 text-slate-900' : 'text-primary',
                       'flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-colors',
                     ]"
                   >
@@ -127,7 +127,7 @@
                   <router-link
                     :to="{ name: 'Dashboard' }"
                     :class="[
-                      active ? 'bg-slate-100 text-slate-900' : 'text-slate-700',
+                      active ? 'bg-slate-100 text-slate-900' : 'text-primary',
                       'flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-colors',
                     ]"
                   >
@@ -217,7 +217,7 @@
             :to="{ name: item.name }"
             :class="[
               isCurrentRoute(item.name)
-                ? 'bg-neutral-800 text-white font-semibold'
+                ? 'bg-neutral-300 text-white font-semibold'
                 : 'text-neutral-300 hover:bg-neutral-800/60 hover:text-white font-medium',
               'block px-3.5 py-2.5 rounded-xl text-sm transition-all',
             ]"

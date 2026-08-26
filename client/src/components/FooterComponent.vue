@@ -7,7 +7,7 @@
         <!-- Brand identity -->
         <div class="lg:col-span-5 space-y-4">
           <div class="flex items-center gap-2">
-            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-600 text-white font-bold text-xl shadow-md shadow-red-600/20">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white font-bold text-xl shadow-md shadow-red-600/20">
               Q
             </div>
             <span class="text-xl font-bold tracking-tight text-white">Quora Clone</span>
@@ -20,7 +20,7 @@
         <!-- Inline Newsletter form -->
         <div class="lg:col-span-7 flex flex-col justify-center">
           <div class="rounded-2xl bg-neutral-900/60 p-6 border border-neutral-800/60 backdrop-blur-sm">
-            <h4 class="text-base font-semibold text-white">Stay in the loop</h4>
+            <h4 class="font-semibold text-primary">Stay in the loop</h4>
             <p class="mt-1 text-sm text-neutral-400">
               Get the weekly digest of the best questions and discussions delivered to your inbox.
             </p>

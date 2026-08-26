@@ -28,7 +28,7 @@
           <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-accent shadow-sm transition-all duration-150 hover:bg-secondary hover:shadow active:scale-[0.98]"
+              class="inline-flex items-center justify-center rounded-xl bg-black text-white px-6 py-3 text-sm font-semibold shadow-sm transition-all duration-150 hover:bg-secondary hover:shadow active:scale-[0.98]"
             >
               Get Started
             </button>
