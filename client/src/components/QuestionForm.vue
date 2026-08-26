@@ -170,6 +170,7 @@ const [description] = defineField("description");
 const { closeModal, addQuestion } = props;
 
 const onSubmit = handleSubmit((values) => {
+  console.log("Submitting question:", values.content, values.description);
   if (props.question) {
     props.updateQuestion(values.content, values.description);
   } else {

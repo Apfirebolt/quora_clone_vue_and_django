@@ -80,10 +80,6 @@
           <span>Read answers</span>
           <span class="transition-transform group-hover/btn:translate-x-0.5">→</span>
         </button>
-
-        <span class="text-xs text-slate-400 dark:text-neutral-500">
-          Click to expand
-        </span>
       </div>
 
     </div>

@@ -47,7 +47,7 @@
       <!-- Collapsible Notification Center -->
       <div
         v-if="notifications && notifications.results && notifications.results.length > 0"
-        class="overflow-hidden rounded-2xl border border-blue-100 bg-blue-50/60 shadow-xs backdrop-blur-sm"
+        class="overflow-hidden rounded-2xl border border-blue-100 bg-accent shadow-xs backdrop-blur-sm"
       >
         <button
           @click="toggleNotifications"
@@ -289,7 +289,11 @@ const toggleNotifications = () => {
 };
 
 const addQuestion = async (content, description) => {
-  await questionStore.addQuestion(content, description);
+  const data = {
+    content: content,
+    description: description,
+  };
+  await questionStore.addQuestion(data);
   await questionStore.getQuestionsAction();
 };
 

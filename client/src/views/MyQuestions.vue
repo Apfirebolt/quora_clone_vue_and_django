@@ -276,7 +276,11 @@ const filteredQuestions = computed(() => {
 });
 
 const addQuestion = async (content, description) => {
-  await questionStore.addQuestion(content, description);
+  const data = {
+    content: content,
+    description: description,
+  };
+  await questionStore.addQuestion(data);
   await questionStore.getMyQuestionsAction();
 };
 
