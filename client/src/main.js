@@ -8,32 +8,22 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import HeaderComponent from "./components/HeaderComponent.vue";
 import FooterComponent from "./components/FooterComponent.vue";
-// Swiper imports
 import SwiperClass, { Pagination } from "swiper";
 import VueAwesomeSwiper from "vue-awesome-swiper";
 import "swiper/css";
 import "swiper/css/pagination";
-// AOS imports
 import "aos/dist/aos.css";
 
-// Use swiper modules
 SwiperClass.use([Pagination]);
 
 const app = createApp(App);
-app.use(router);
-app.use(createPinia());
-app.use(VueSmoothScroll);
-app.use(VueAwesomeSwiper);
-app.component("header-component", HeaderComponent);
-app.component("footer-component", FooterComponent);
-app.mount("#app");
 
-const options = {
-  transition: "Vue-Toastification__bounce",
-  maxToasts: 20,
+const toastOptions = {
+  transition: "Vue-Toastification__fade",
+  maxToasts: 5,
   newestOnTop: true,
   position: "top-right",
-  timeout: 5000,
+  timeout: 4000,
   closeOnClick: true,
   pauseOnFocusLoss: true,
   pauseOnHover: true,
@@ -42,6 +32,17 @@ const options = {
   closeButton: "button",
   icon: true,
   rtl: false,
+  toastClassName: "custom-theme-toast",
+  bodyClassName: "custom-theme-toast-body",
 };
 
-app.use(Toast, options);
+app.use(router);
+app.use(createPinia());
+app.use(VueSmoothScroll);
+app.use(VueAwesomeSwiper);
+app.use(Toast, toastOptions);
+
+app.component("header-component", HeaderComponent);
+app.component("footer-component", FooterComponent);
+
+app.mount("#app");

@@ -65,3 +65,70 @@ h1 {
     background-color: #f9f9f9;
   }
 }
+
+/* Base Container & Typography */
+.Vue-Toastification__toast.custom-theme-toast {
+  font-family: inherit;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 11, 88, 0.2), 0 8px 10px -6px rgba(0, 11, 88, 0.15);
+  border: 1px solid rgba(238, 238, 238, 0.15);
+  backdrop-filter: blur(8px);
+  color: #EEEEEE;
+}
+
+.custom-theme-toast-body {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #EEEEEE;
+}
+
+/* Default Toast: Base (#000B58) */
+.Vue-Toastification__toast--default.custom-theme-toast {
+  background-color: #000B58;
+}
+
+/* Info Toast: Neutral (#1E3E62) */
+.Vue-Toastification__toast--info.custom-theme-toast {
+  background-color: #1E3E62;
+  border-color: rgba(30, 62, 98, 0.4);
+}
+
+/* Error Toast: Primary (#8E1616) */
+.Vue-Toastification__toast--error.custom-theme-toast {
+  background-color: #8E1616;
+  border-color: rgba(216, 64, 64, 0.3);
+}
+
+/* Warning Toast: Secondary (#D84040) / Amber */
+.Vue-Toastification__toast--warning.custom-theme-toast {
+  background-color: #D84040;
+}
+
+/* Success Toast: Emerald with Deep Contrast (#10B981) */
+.Vue-Toastification__toast--success.custom-theme-toast {
+  background-color: #10B981;
+}
+
+/* Close Button Styling */
+.Vue-Toastification__close-button {
+  color: #EEEEEE;
+  opacity: 0.7;
+  font-size: 1.1rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.Vue-Toastification__close-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Progress Bar Overrides */
+.Vue-Toastification__progress-bar {
+  background-color: #EEEEEE;
+  opacity: 0.4;
+  height: 3px;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}

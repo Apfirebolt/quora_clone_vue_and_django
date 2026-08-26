@@ -1,20 +1,25 @@
 <template>
-  <div class="text-center mb-8">
-    <h2 class="text-4xl font-bold text-gray-800 mb-2">
-      {{ title }}
-    </h2>
-    <div
-      class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"
-    ></div>
-    <h3 class="text-lg leading-6 font-medium text-gray-900 my-3">
+  <div class="space-y-1.5 font-inter">
+    <!-- Title with Brand-Themed Accent Dot -->
+    <div class="flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-primary ring-4 ring-primary/20"></span>
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+        {{ title }}
+      </h2>
+    </div>
+
+    <!-- Subtitle -->
+    <p
+      v-if="subtitle"
+      class="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 max-w-2xl leading-relaxed"
+    >
       {{ subtitle }}
-    </h3>
+    </p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     required: true,
