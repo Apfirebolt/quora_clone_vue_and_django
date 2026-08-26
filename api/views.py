@@ -9,7 +9,10 @@ from rest_framework.generics import (
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from core.utils import publish_login_event
+from core.utils import publish_profile_update_event
+from core.utils import publish_follow_event
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.response import Response
@@ -58,7 +61,6 @@ class CreateCustomUserApiView(CreateAPIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    # Replace the serializer with your custom
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = []
 
@@ -70,7 +72,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
 
-        # Serializer validated successfully -> Publish event to RabbitMQ
         publish_login_event(serializer.validated_data)
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
@@ -100,6 +101,9 @@ class ProfileView(APIView):
         serializer = ProfileSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        # Publish profile update payload to RabbitMQ
+        publish_profile_update_event(serializer.data)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -161,17 +165,38 @@ class FollowUserApiView(APIView):
         user = request.user
         followed_user = get_object_or_404(CustomUser, username=username)
 
+        # Prevent users from following themselves
+        if user == followed_user:
+            return Response(
+                {"detail": "You cannot follow yourself."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         user.following.add(followed_user)
         followed_user.followers.add(user)
 
-        return Response(status=status.HTTP_200_OK)
-    
+        # Publish follow event
+        publish_follow_event(
+            event_type="user.followed",
+            follower=user,
+            followed_user=followed_user
+        )
+
+        return Response({"detail": f"Now following {username}"}, status=status.HTTP_200_OK)
+
     def delete(self, request, username):
         user = request.user
         followed_user = get_object_or_404(CustomUser, username=username)
 
         user.following.remove(followed_user)
         followed_user.followers.remove(user)
+
+        # Publish unfollow event
+        publish_follow_event(
+            event_type="user.unfollowed",
+            follower=user,
+            followed_user=followed_user
+        )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
     
