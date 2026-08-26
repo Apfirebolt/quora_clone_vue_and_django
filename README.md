@@ -178,6 +178,26 @@ To deploy this project using Docker, follow these steps:
 
 This setup uses Docker to containerize both the backend and frontend of the application, along with a PostgreSQL database. The `docker-compose.yml` file orchestrates the services, ensuring they are built and run together.
 
+# Celery
+
+1. To run the Celery worker and scheduler (Beat) for the project, open separate terminal windows in the project root directory where manage.py lives and run:
+
+`
+celery -A quora_clone worker --loglevel=info
+`
+
+2. Celery Beat (Scheduler / Executor)
+
+`
+celery -A quora_clone beat --loglevel=info
+`
+
+Running both scehduler and worker in a single terminal
+
+`
+celery -A quora_clone worker --beat --loglevel=info
+`
+
 # Screenshots
 
 The dashboard page where you can see all the latest questions.

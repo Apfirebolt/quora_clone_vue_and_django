@@ -349,8 +349,8 @@ class QuestionLikeAPIView(APIView):
     serializer_class = QuestionSerializer
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, slug):
-        question = get_object_or_404(Question, slug=slug)
+    def delete(self, request, uuid):
+        question = get_object_or_404(Question, uuid=uuid)
         user = request.user
         question.upvotes.remove(user)
         question.downvotes.remove(user)
@@ -359,8 +359,8 @@ class QuestionLikeAPIView(APIView):
         serializer = self.serializer_class(question, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, slug):
-        question = get_object_or_404(Question, slug=slug)
+    def post(self, request, uuid):
+        question = get_object_or_404(Question, uuid=uuid)
         rating = request.data.get("rating")
         user = request.user
 
