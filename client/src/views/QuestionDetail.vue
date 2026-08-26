@@ -31,7 +31,7 @@
               <button
                 @click="openModal"
                 type="button"
-                class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-red-800 px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
+                class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-accent shadow-sm transition hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
               >
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -99,7 +99,7 @@
         <!-- Answers Section -->
         <section class="space-y-6">
           <div class="flex items-center justify-between px-1">
-            <h2 class="text-lg font-bold tracking-tight text-gray-900">
+            <h2 class="text-lg font-bold tracking-tight text-accent">
               Answers <span class="text-primary font-medium text-base">({{ question.answers ? question.answers.length : 0 }})</span>
             </h2>
           </div>
