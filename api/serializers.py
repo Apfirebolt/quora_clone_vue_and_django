@@ -154,11 +154,12 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField()
+    author = serializers.StringRelatedField(read_only=True)
     created_at = serializers.SerializerMethodField()
     slug = serializers.SlugField(read_only=True)
+    image = serializers.ImageField(required=False, allow_null=True)
+    image_url = serializers.SerializerMethodField()
     answers_count = serializers.SerializerMethodField()
-    # Uses SerializerMethodField to leverage prefetch_related optimization
     answers = serializers.SerializerMethodField()
     upvoted_users = serializers.SerializerMethodField()
     downvoted_users = serializers.SerializerMethodField()
@@ -166,23 +167,34 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         exclude = ["id", "updated_at"]
+        read_only_fields = ["uuid", "slug", "author", "image_url"]
+
+    def get_image_url(self, instance):
+        if instance.image:
+            return instance.image.url
+        return None
 
     def get_created_at(self, instance):
         return instance.created_at.strftime("%B %d, %Y")
 
     def get_answers_count(self, instance):
         # Use annotation to avoid additional query
-        return getattr(instance, 'answers_count', instance.answers.count())
-    
+        return getattr(instance, "answers_count", instance.answers.count())
+
     def get_answers(self, instance):
-        # Use prefetch_related to avoid N+1 queries
-        return AnswerSerializer(instance.answers.all(), many=True).data
-    
+        # Pass context so nested URLs (or request-dependent fields) serialize correctly
+        return AnswerSerializer(
+            instance.answers.all(), many=True, context=self.context
+        ).data
+
     def get_upvoted_users(self, instance):
-        return list(instance.upvotes.all().values_list('username', flat=True))
-    
+        # If prefetch_related('upvotes') is used in the queryset, instance.upvotes.all()
+        # uses the prefetch cache without hitting the DB again
+        return [user.username for user in instance.upvotes.all()]
+
     def get_downvoted_users(self, instance):
-        return list(instance.downvotes.all().values_list('username', flat=True))
+        # Uses prefetch cache instead of issuing a separate DB query via .values_list()
+        return [user.username for user in instance.downvotes.all()]
     
     
 

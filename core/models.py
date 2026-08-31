@@ -6,6 +6,7 @@ from django.dispatch import receiver
 
 from django.conf import settings
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class TimeStampedModel(models.Model):
@@ -29,6 +30,12 @@ class Question(TimeStampedModel):
     )
     downvotes = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="downvoted_questions", blank=True
+    )
+    image = CloudinaryField(
+        "image",
+        folder="questions/",
+        null=True,
+        blank=True,
     )
     tags = models.ManyToManyField("Tag", related_name="questions", blank=True)
 

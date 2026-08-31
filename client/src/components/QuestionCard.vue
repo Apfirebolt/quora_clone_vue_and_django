@@ -71,6 +71,20 @@
         </p>
       </div>
 
+      <!-- Optional Question Image Attachment -->
+      <div
+        v-if="questionImage"
+        @click="viewQuestion(question)"
+        class="cursor-pointer overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50 dark:border-neutral-800 dark:bg-neutral-800/40"
+      >
+        <img
+          :src="questionImage"
+          :alt="question.content"
+          loading="lazy"
+          class="max-h-80 w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+        />
+      </div>
+
       <!-- Bottom Interactive Bar -->
       <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-neutral-800/80">
         <button
@@ -111,6 +125,10 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+});
+
+const questionImage = computed(() => {
+  return props.question?.image_url || props.question?.image || null;
 });
 
 const formattedDate = computed(() => {

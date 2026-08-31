@@ -2,6 +2,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import cloudinary
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,6 +51,8 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl',
     'django_elasticsearch_dsl_drf',
     'django_redis',
+    'cloudinary_storage',
+    'cloudinary',
 
     'accounts',
     'core',
@@ -166,6 +170,23 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer", ),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
 }
+
+# Cloudinary configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'your_cloud_name',
+    'API_KEY': 'your_api_key',
+    'API_SECRET': 'your_api_secret',
+}
+
+cloudinary.config(
+    cloud_name='your_cloud_name',
+    api_key='your_api_key',
+    api_secret='your_api_secret',
+    secure=True,
+)
+
+# Optional: Set Cloudinary as default media storage globally
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # RabbitMQ settings
 RABBITMQ_HOST = 'localhost'

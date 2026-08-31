@@ -45,9 +45,24 @@
               <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-gray-900 leading-snug">
                 {{ question.content }}
               </h1>
-              <p class="text-sm sm:text-base leading-relaxed text-gray-600">
+              <p class="text-sm sm:text-base leading-relaxed text-gray-600 whitespace-pre-line">
                 {{ question.description || 'No description provided' }}
               </p>
+            </div>
+
+            <!-- Optional Attached Question Image -->
+            <div
+              v-if="questionImage"
+              class="overflow-hidden rounded-2xl border border-gray-200/80 bg-slate-50/50 shadow-xs"
+            >
+              <a :href="questionImage" target="_blank" rel="noopener noreferrer" class="block group/img">
+                <img
+                  :src="questionImage"
+                  :alt="question.content"
+                  loading="lazy"
+                  class="max-h-[500px] w-full object-contain bg-slate-900/5 transition-transform duration-300 group-hover/img:scale-[1.005]"
+                />
+              </a>
             </div>
 
             <!-- Question Voting & Dynamic Feedback Pill Badges -->
@@ -363,6 +378,10 @@ const route = useRoute();
 
 const question = computed(() => questionStore.getQuestion);
 const isQuestionLoading = computed(() => questionStore.isLoading);
+
+const questionImage = computed(() => {
+  return question.value?.image_url || question.value?.image || null;
+});
 
 function closeModal() {
   isOpen.value = false;
