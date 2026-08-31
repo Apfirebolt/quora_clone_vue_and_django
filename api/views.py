@@ -11,7 +11,7 @@ from django_elasticsearch_dsl_drf.filter_backends import (
 )
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status
+from rest_framework import filters, parsers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import (
     CreateAPIView,
@@ -283,6 +283,11 @@ class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = QuestionSerializer
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     lookup_field = "slug"
+    parser_classes = [
+        parsers.MultiPartParser,
+        parsers.FormParser,
+        parsers.JSONParser,
+    ]
 
     def get_queryset(self):
         return (
@@ -307,18 +312,6 @@ class RetrieveUpdateDestroyQuestionApiView(RetrieveUpdateDestroyAPIView):
             )
             .annotate(answers_count=Count("answers"))
         )
-
-    def delete(self, request, slug):
-        question = get_object_or_404(Question, slug=slug)
-        question.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def update(self, request, slug):
-        question = get_object_or_404(Question, slug=slug)
-        serializer = self.get_serializer(question, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MyQuestionsListAPIView(ListAPIView):

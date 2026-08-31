@@ -23,7 +23,7 @@
               </span>
               <input
                 v-model="searchText"
-                type="text"
+                type="search"
                 placeholder="Search questions..."
                 class="w-full rounded-xl border border-gray-200 bg-gray-50/60 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
@@ -33,7 +33,7 @@
             <button
               @click="openModal"
               type="button"
-              class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-accent shadow-sm transition-all hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
+              class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
             >
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -104,9 +104,12 @@
         </transition>
       </div>
 
+      <!-- Loading State -->
+      <Loader v-if="isLoading" />
+
       <!-- Feed / Questions List -->
-      <div v-if="questions && questions.results && questions.results.length > 0" class="space-y-4">
-        <div v-for="question in questions.results" :key="question.id">
+      <div v-else-if="questionList && questionList.length > 0" class="space-y-4">
+        <div v-for="question in questionList" :key="question.uuid || question.slug || question.id">
           <question-card
             :question="question"
             :deleteQuestion="deleteQuestion"
@@ -225,6 +228,7 @@ import QuestionForm from "../components/QuestionForm.vue";
 import ConfirmModal from "../components/Confirm.vue";
 import QuestionCard from "../components/QuestionCard.vue";
 import SectionHeader from "../components/SectionHeader.vue";
+import Loader from "../components/Loader.vue";
 import { useQuestion } from "../store/question";
 import { useNotification } from "../store/notification";
 import { useAuth } from "../store/auth";
@@ -245,39 +249,46 @@ const confirmMessage = ref("");
 const isNotificationsOpen = ref(false);
 const searchText = ref("");
 const router = useRouter();
-let timeoutId;
+let timeoutId = null;
 
 const debouncedSearch = (value) => {
   if (timeoutId) clearTimeout(timeoutId);
   timeoutId = setTimeout(() => {
-    if (value && value.trim().length > 3) {
-      searchQuestionUtil();
-    } else {
+    const trimmed = value?.trim() || "";
+    if (trimmed.length > 2) {
+      questionStore.getQuestionsAction(trimmed);
+    } else if (trimmed.length === 0) {
       questionStore.getQuestionsAction();
     }
-  }, 400);
+  }, 350);
 };
 
 watch(searchText, debouncedSearch);
 
-const searchQuestionUtil = () => {
-  questionStore.getQuestionsAction(searchText.value.trim());
-};
-
 const questions = computed(() => questionStore.getQuestions);
+const isLoading = computed(() => questionStore.isLoading);
 const notifications = computed(() => notificationStore.getNotifications);
+
+const questionList = computed(() => {
+  if (!questions.value) return [];
+  return Array.isArray(questions.value)
+    ? questions.value
+    : questions.value.results || [];
+});
 
 function closeModal() {
   isOpen.value = false;
+  selectedQuestion.value = null;
 }
 
 function openModal() {
-  isOpen.value = true;
   selectedQuestion.value = null;
+  isOpen.value = true;
 }
 
 function closeConfirmModal() {
   isConfirmModalOpen.value = false;
+  selectedQuestion.value = null;
 }
 
 function openConfirmModal() {
@@ -288,25 +299,17 @@ const toggleNotifications = () => {
   isNotificationsOpen.value = !isNotificationsOpen.value;
 };
 
-const addQuestion = async (content, description) => {
-  const data = {
-    content: content,
-    description: description,
-  };
-  await questionStore.addQuestion(data);
-  await questionStore.getQuestionsAction();
-};
-
-const deleteQuestion = async (question) => {
-  selectedQuestion.value = question;
-  confirmMessage.value = `Are you sure you want to delete "${question.content}"?`;
-  openConfirmModal();
-};
-
-const deleteQuestionUtil = async () => {
-  await questionStore.deleteQuestion(selectedQuestion.value.slug);
-  await questionStore.getQuestionsAction();
-  closeConfirmModal();
+/**
+ * Passes payload ({ content, description, image }) directly to store
+ */
+const addQuestion = async (payload) => {
+  try {
+    await questionStore.addQuestion(payload);
+    await questionStore.getQuestionsAction(searchText.value.trim());
+    closeModal();
+  } catch (error) {
+    console.error("Failed to add question:", error);
+  }
 };
 
 const updateQuestion = (question) => {
@@ -314,20 +317,45 @@ const updateQuestion = (question) => {
   isOpen.value = true;
 };
 
-const updateQuestionUtil = async (content, description) => {
-  const question = { ...selectedQuestion.value, content, description };
-  await questionStore.updateQuestion(question);
-  await questionStore.getQuestionsAction();
-  closeModal();
+/**
+ * Handles update payloads from QuestionForm with slug resolution
+ */
+const updateQuestionUtil = async (slugOrPayload, payloadData) => {
+  try {
+    const slug = typeof slugOrPayload === "string" ? slugOrPayload : selectedQuestion.value?.slug;
+    const payload = typeof slugOrPayload === "string" ? payloadData : slugOrPayload;
+
+    await questionStore.updateQuestion(slug, payload);
+    await questionStore.getQuestionsAction(searchText.value.trim());
+    closeModal();
+  } catch (error) {
+    console.error("Failed to update question:", error);
+  }
 };
 
-const viewQuestion = async (question) => {
+const deleteQuestion = (question) => {
+  selectedQuestion.value = question;
+  confirmMessage.value = `Are you sure you want to delete "${question.content}"?`;
+  openConfirmModal();
+};
+
+const deleteQuestionUtil = async () => {
+  if (!selectedQuestion.value?.slug) return;
+  try {
+    await questionStore.deleteQuestion(selectedQuestion.value.slug);
+    await questionStore.getQuestionsAction(searchText.value.trim());
+  } finally {
+    closeConfirmModal();
+  }
+};
+
+const viewQuestion = (question) => {
   router.push({ name: "QuestionDetail", params: { slug: question.slug } });
 };
 
 const isQuestionOwner = computed(() => {
   return (question) =>
-    authStore.authData && question.author === authStore.authData.email;
+    authStore.authData && question.author === authStore.authData.username;
 });
 
 onMounted(() => {

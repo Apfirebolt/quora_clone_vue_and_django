@@ -2,88 +2,105 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import NotFound from '../views/NotFound.vue'
 
-const authGuard = (to, from, next) => {
-    if (localStorage.getItem('user')) {
-        next()
-    } else {
-        next('/login')
-    }
-}
-
 const routes = [
     {
         path: '/',
         name: 'Home',
-        component: Home
+        component: Home,
     },
     {
         path: '/login',
         name: 'Login',
-        component: () => import('../views/Login.vue')
+        component: () => import('../views/Login.vue'),
+        meta: { guestOnly: true },
     },
     {
         path: '/register',
         name: 'Register',
-        component: () => import('../views/Register.vue')
+        component: () => import('../views/Register.vue'),
+        meta: { guestOnly: true },
     },
     {
         path: '/profile',
         name: 'Profile',
-        beforeEnter: authGuard,
-        component: () => import('../views/Profile.vue')
+        component: () => import('../views/Profile.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/dashboard',
         name: 'Dashboard',
-        beforeEnter: authGuard,
-        component: () => import('../views/Dashboard.vue')
+        component: () => import('../views/Dashboard.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/my-questions',
         name: 'MyQuestions',
-        beforeEnter: authGuard,
-        component: () => import('../views/MyQuestions.vue')
+        component: () => import('../views/MyQuestions.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/my-answers',
         name: 'MyAnswers',
-        beforeEnter: authGuard,
-        component: () => import('../views/MyAnswers.vue')
+        component: () => import('../views/MyAnswers.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/questions/:slug',
         name: 'QuestionDetail',
-        beforeEnter: authGuard,
-        component: () => import('../views/QuestionDetail.vue')
+        component: () => import('../views/QuestionDetail.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/users',
         name: 'Users',
-        beforeEnter: authGuard,
-        component: () => import('../views/Users.vue')
+        component: () => import('../views/Users.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/users/:username',
         name: 'UserDetail',
-        beforeEnter: authGuard,
-        component: () => import('../views/UserDetail.vue')
+        component: () => import('../views/UserDetail.vue'),
+        meta: { requiresAuth: true },
     },
     {
         path: '/server-error',
         name: 'ServerError',
-        component: () => import('../views/ServerError.vue')
+        component: () => import('../views/ServerError.vue'),
     },
     {
-        path: '/:catchAll(.*)',
+        path: '/:catchAll(.*)*',
         name: 'NotFound',
-        component: NotFound
-    }
+        component: NotFound,
+    },
 ]
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition
+        }
+        return { top: 0 }
+    },
 })
 
+// Centralized Global Navigation Guard
+router.beforeEach((to) => {
+    const isAuthenticated = Boolean(localStorage.getItem('user'))
+
+    // Protected routes: redirect unauthenticated users to login with redirect query
+    if (to.meta.requiresAuth && !isAuthenticated) {
+        return {
+            name: 'Login',
+            query: { redirect: to.fullPath },
+        }
+    }
+
+    // Guest-only routes: redirect authenticated users to home/dashboard
+    if (to.meta.guestOnly && isAuthenticated) {
+        return { name: 'Dashboard' }
+    }
+})
 
 export default router

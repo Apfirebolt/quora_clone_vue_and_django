@@ -1,7 +1,7 @@
 <template>
   <header-component />
 
-  <main class="min-h-[calc(100vh-4rem)] bg-neutral/10 py-10 px-4 sm:px-6 lg:px-8" id="about">
+  <main class="min-h-[calc(100vh-4rem)] bg-neutral/10 py-10 px-4 sm:px-6 lg:px-8 font-inter" id="about">
     <div class="mx-auto max-w-6xl space-y-8">
       
       <!-- Top Section Header & Actions Bar -->
@@ -9,7 +9,7 @@
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <SectionHeader
             title="My Questions"
-            subtitle="Overview of your questions and their answers"
+            subtitle="Overview of your questions, attachments, and answers"
           />
 
           <!-- Action Controls -->
@@ -23,7 +23,7 @@
               </span>
               <input
                 v-model="searchQuery"
-                type="text"
+                type="search"
                 placeholder="Search questions..."
                 class="w-full rounded-xl border border-gray-200 bg-gray-50/60 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
@@ -33,7 +33,7 @@
             <button
               @click="openModal"
               type="button"
-              class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-accent shadow-sm transition hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
+              class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/40 active:scale-[0.98]"
             >
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -51,10 +51,24 @@
       <div v-else-if="filteredQuestions && filteredQuestions.length > 0" class="space-y-4">
         <article
           v-for="question in filteredQuestions"
-          :key="question.id"
+          :key="question.uuid || question.slug || question.id"
           class="group relative rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
         >
-          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-5">
+            <!-- Question Thumbnail Preview (If Attached) -->
+            <div
+              v-if="question.image_url || question.image"
+              @click="viewQuestion(question)"
+              class="w-full sm:w-28 h-28 sm:shrink-0 overflow-hidden rounded-xl bg-slate-100 border border-slate-200/80 cursor-pointer"
+            >
+              <img
+                :src="question.image_url || question.image"
+                :alt="question.content"
+                loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
+
             <!-- Question Content -->
             <div class="flex-1 space-y-2.5 min-w-0">
               <div class="flex items-center gap-2">
@@ -63,6 +77,12 @@
                 </span>
                 <span v-if="question.created_at" class="text-xs text-slate-400">
                   {{ formatDate(question.created_at) }}
+                </span>
+                <span v-if="question.image_url || question.image" class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400">
+                  <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Image
                 </span>
               </div>
 
@@ -73,9 +93,23 @@
                 {{ question.content }}
               </h3>
 
-              <p class="text-sm text-slate-600 leading-relaxed line-clamp-3">
+              <p class="text-sm text-slate-600 leading-relaxed line-clamp-2">
                 {{ question.description }}
               </p>
+
+              <!-- Meta Footer -->
+              <div class="flex items-center gap-4 pt-1 text-xs text-slate-400 font-medium">
+                <span class="inline-flex items-center gap-1">
+                  <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  {{ question.answers_count ?? (question.answers ? question.answers.length : 0) }} answers
+                </span>
+                <span>•</span>
+                <span class="inline-flex items-center gap-1 text-emerald-600">
+                  ▲ {{ question.upvoted_users?.length || 0 }} upvotes
+                </span>
+              </div>
             </div>
 
             <!-- Segmented Action Toolbar -->
@@ -215,7 +249,6 @@ import ConfirmModal from "../components/Confirm.vue";
 import SectionHeader from "../components/SectionHeader.vue";
 import Loader from "../components/Loader.vue";
 import { useQuestion } from "../store/question";
-import { useAuth } from "../store/auth";
 import { PencilIcon, TrashIcon, EyeIcon } from "@heroicons/vue/outline";
 import {
   TransitionRoot,
@@ -227,7 +260,6 @@ import {
 const isOpen = ref(false);
 const isConfirmModalOpen = ref(false);
 const questionStore = useQuestion();
-const authStore = useAuth();
 const selectedQuestion = ref(null);
 const searchQuery = ref("");
 const confirmMessage = ref("");
@@ -238,15 +270,17 @@ const isLoading = computed(() => questionStore.isLoading);
 
 function closeModal() {
   isOpen.value = false;
+  selectedQuestion.value = null;
 }
 
 function openModal() {
-  isOpen.value = true;
   selectedQuestion.value = null;
+  isOpen.value = true;
 }
 
 function closeConfirmModal() {
   isConfirmModalOpen.value = false;
+  selectedQuestion.value = null;
 }
 
 function openConfirmModal() {
@@ -263,11 +297,14 @@ const formatDate = (dateString) => {
 };
 
 const filteredQuestions = computed(() => {
-  if (!questions.value || !questions.value.results) return [];
-  const query = searchQuery.value.toLowerCase().trim();
-  if (!query) return questions.value.results;
+  const rawList = Array.isArray(questions.value)
+    ? questions.value
+    : questions.value?.results || [];
 
-  return questions.value.results.filter((question) => {
+  const query = searchQuery.value.toLowerCase().trim();
+  if (!query) return rawList;
+
+  return rawList.filter((question) => {
     return (
       question.content?.toLowerCase().includes(query) ||
       question.description?.toLowerCase().includes(query)
@@ -275,25 +312,17 @@ const filteredQuestions = computed(() => {
   });
 });
 
-const addQuestion = async (content, description) => {
-  const data = {
-    content: content,
-    description: description,
-  };
-  await questionStore.addQuestion(data);
-  await questionStore.getMyQuestionsAction();
-};
-
-const deleteQuestion = async (question) => {
-  selectedQuestion.value = question;
-  confirmMessage.value = `Are you sure you want to delete the question: "${question.content}"?`;
-  openConfirmModal();
-};
-
-const deleteQuestionUtil = async () => {
-  await questionStore.deleteQuestion(selectedQuestion.value.slug);
-  await questionStore.getMyQuestionsAction();
-  closeConfirmModal();
+/**
+ * Accepts full payload object (content, description, image) from QuestionForm
+ */
+const addQuestion = async (payload) => {
+  try {
+    await questionStore.addQuestion(payload);
+    await questionStore.getMyQuestionsAction();
+    closeModal();
+  } catch (error) {
+    console.error("Failed to add question:", error);
+  }
 };
 
 const updateQuestion = (question) => {
@@ -301,14 +330,39 @@ const updateQuestion = (question) => {
   isOpen.value = true;
 };
 
-const updateQuestionUtil = async (content, description) => {
-  const question = { ...selectedQuestion.value, content, description };
-  await questionStore.updateQuestion(question);
-  await questionStore.getMyQuestionsAction();
-  closeModal();
+/**
+ * Accepts (slug, payload) or (payload) from QuestionForm
+ */
+const updateQuestionUtil = async (slugOrPayload, payloadData) => {
+  try {
+    const slug = typeof slugOrPayload === "string" ? slugOrPayload : selectedQuestion.value?.slug;
+    const payload = typeof slugOrPayload === "string" ? payloadData : slugOrPayload;
+
+    await questionStore.updateQuestion(slug, payload);
+    await questionStore.getMyQuestionsAction();
+    closeModal();
+  } catch (error) {
+    console.error("Failed to update question:", error);
+  }
 };
 
-const viewQuestion = async (question) => {
+const deleteQuestion = (question) => {
+  selectedQuestion.value = question;
+  confirmMessage.value = `Are you sure you want to delete the question: "${question.content}"?`;
+  openConfirmModal();
+};
+
+const deleteQuestionUtil = async () => {
+  if (!selectedQuestion.value?.slug) return;
+  try {
+    await questionStore.deleteQuestion(selectedQuestion.value.slug);
+    await questionStore.getMyQuestionsAction();
+  } finally {
+    closeConfirmModal();
+  }
+};
+
+const viewQuestion = (question) => {
   router.push({ name: "QuestionDetail", params: { slug: question.slug } });
 };
 
