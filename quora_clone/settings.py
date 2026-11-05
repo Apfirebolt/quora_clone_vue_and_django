@@ -173,15 +173,15 @@ SIMPLE_JWT = {
 
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'your_cloud_name',
-    'API_KEY': 'your_api_key',
-    'API_SECRET': 'your_api_secret',
+    'CLOUD_NAME': 'dhwib3dgn',
+    'API_KEY': '914496974254927',
+    'API_SECRET': '0X5BAGryXM7CD9G-V8foLzupTlo',
 }
 
 cloudinary.config(
-    cloud_name='your_cloud_name',
-    api_key='your_api_key',
-    api_secret='your_api_secret',
+    cloud_name='dhwib3dgn',
+    api_key='914496974254927',
+    api_secret='0X5BAGryXM7CD9G-V8foLzupTlo',
     secure=True,
 )
 
