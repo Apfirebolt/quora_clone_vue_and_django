@@ -200,25 +200,25 @@ celery -A quora_clone worker --beat --loglevel=info
 
 # Screenshots
 
-The dashboard page where you can see all the latest questions.
+Question detail page, it has all the info associated with a given question.
 
-![Screenshot 1](screenshots/1.png)
+![Screenshot 1](screenshots/1.jpg)
 
-Profile page where a user can update profile related details , change password and profile image which would be through a modal.
+My Questions page
 
-![Screenshot 2](screenshots/2.png)
+![Screenshot 2](screenshots/2.jpg)
 
-The question detail page where you can see all the answers and comments related to a given question.
+My Answers page
 
-![Screenshot 3](screenshots/3.png)
+![Screenshot 3](screenshots/3.jpg)
 
-This is user detail page where you can see statistics related to a user such as who is following this user, the number of questions posted and the answers provided by this user.
+Profile settings page
 
-![Screenshot 4](screenshots/4.png)
+![Screenshot 4](screenshots/4.jpg)
 
-This picture shows the modal which opens while adding a new answer to a given question.
+Dashboard page
 
-![Screenshot 5](screenshots/5.png)
+![Screenshot 5](screenshots/5.jpg)
 
 ## License
 
